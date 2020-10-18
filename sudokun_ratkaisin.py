@@ -223,68 +223,89 @@ def lisaa_sudokuun(sudoku: list, rivi: int, sarake: int, numero: int, mahdollise
     poista_mahdollisista_blokissa(mahdolliset, ruudun_blokki(rivi, sarake), numero)
     mahdolliset[rivi][sarake] = []
 
+def ota_rivi(rivinro: int) -> list:
+    while True:
+        try:
+            syote = input(f"Syötä rivi #{rivinro} numeroita, erottimena välilyönti.\n{'# ' * 8}#\n")
+            if len(syote) > 17:
+                syote = syote[:17]
+            if len(syote) < 17:
+                syote += " " * (17 - len(syote))
+            for i in range(0, 18, 2):
+                if syote[i] == " ":
+                    syote = syote[:i] + "0" + syote[i+1:]
+                if syote[i] not in "0123456789":
+                    syote = syote[:i] + "0" + syote[i+1:]
+            for i in range(1, 17, 2):
+                if syote[i] != " ":
+                    syote = syote[:i] + " " + syote[i+1:]
+            rivi = syote.strip().split(" ")
+            rivi = [int(i) for i in rivi]
+            for i in rivi:
+                if i != 0 and rivi.count(i) != 1:
+                    raise ValueError
+                if i < 0 or i > 9:
+                    raise ValueError
+            print("Siivottu rivi:")
+            for i in rivi:
+                print(i, end=" ")
+            print("\n\n")
+
+            return rivi
+        except (KeyError, ValueError, IndexError):
+            print()
+            print("Virheellinen rivi")
+            print()
+            continue
+
 def ota_sudoku():
     palautettava = []
     rivinro = 0
-    korjaus = False
     while True:    
-        while korjaus == True or len(palautettava) < 9:
-            try:
-                syote = input(f"Syötä rivi #{rivinro} numeroita, erottimena välilyönti.\n{'# ' * 8}#\n")
-                # print("# " * 8 + "#")
-                if len(syote) > 17:
-                    syote = syote[:17]
-                if len(syote) < 17:
-                    syote += " " * (17 - len(syote))
-                for i in range(0, 18, 2):
-                    if syote[i] == " ":
-                        syote = syote[:i] + "0" + syote[i+1:]
-                rivi = syote.strip().split(" ")
-                rivi = [int(i) for i in rivi]
-                if len(rivi) != 9:
-                    raise ValueError
-                for i in rivi:
-                    if i != 0 and rivi.count(i) != 1:
-                        raise ValueError
-                    if i < 0 or i > 9:
-                        raise ValueError
-                if korjaus == True:
-                    palautettava[rivinro] = rivi
-                else:
-                    palautettava.append(rivi)
-                rivinro = len(palautettava)
-                print()
-                korjaus = False
-            except (KeyError, ValueError):
-                print()
-                print("Virheellinen rivi")
-                print()
-                continue
+        while len(palautettava) < 9:
+            palautettava.append(ota_rivi(rivinro))
+            rivinro = len(palautettava)
         print("Sudokusi alla. Jos olet tyytyväinen, paina Enter, muuten anna korjattavan rivin numero (0 - 8)")
+        print("Käskyllä i# sijoitetaan riville # uusi rivi ja siirretään muita 1 alaspäin")
         tulosta_sudoku(palautettava)
         print()
         try:
             komento = input("Korjattavan rivin numero tai tyhjä = OK: ")
             if komento == "":
+                print("\n")
+                if not onko_kelvollinen(palautettava):
+                    continue
                 return palautettava
+            
+            elif komento[0].lower() == "i":
+                rivinro = int(komento[1])
+                if rivinro > 8 or rivinro < 0:
+                    raise ValueError
+                elif rivinro == 8:
+                    palautettava[8] = ota_rivi(rivinro)
+                else:
+                    for i in range(7, rivinro - 1, -1):
+                        palautettava[i+1] = palautettava[i]
+                    palautettava[rivinro] = ota_rivi(rivinro)
+
             else:
                 rivinro = int(komento)
                 if rivinro < 0 or rivinro > 8:
                     print()
                     print("Rivinumeron oltava väliltä 0 - 8")
                     raise ValueError
-                korjaus = True
+                palautettava[rivinro] = ota_rivi(rivinro)
                 continue
         except (KeyError, ValueError):
             continue
 
 if __name__ == "__main__":
-    for i in range(0
-    # sudoku = ota_sudoku()
-    # print("Ok, lähdetään ratkaisemaan")
-    # print("Annettu sudoku")
-    # tulosta_sudoku(sudoku)
-    # ratkaise_sudoku(sudoku)
+    
+    sudoku = ota_sudoku()
+    print("Ok, lähdetään ratkaisemaan")
+    print("Annettu sudoku")
+    tulosta_sudoku(sudoku)
+    ratkaise_sudoku(sudoku)
 
     # sudoku_keskitaso = [
     #     [6, 0, 9, 0, 4, 0, 0, 0, 1],

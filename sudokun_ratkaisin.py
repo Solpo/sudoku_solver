@@ -194,6 +194,13 @@ def rivin_ruudut(rivi: int) -> list:
         palautettavat_ruudut.append((rivi, i))
     return palautettavat_ruudut
 
+def muut_linjat_blokissa(linja: int) -> tuple:
+    if linja < 0 or linja > 8:
+        raise ValueError("Pitää olla 0 - 8")
+    levea = [i for i in range((linja // 3 * 3), ((linja // 3 * 3) + 3))]
+    levea.remove(linja)
+    return tuple(levea)
+
 def poista_mahdollisista_rivilla(mahdolliset: list, rivi: int, numero: int): 
     for mahdollisten_rivi, mahdollisten_ruutu in rivin_ruudut(rivi):
         if numero in mahdolliset[mahdollisten_rivi][mahdollisten_ruutu]:
@@ -272,6 +279,7 @@ def ota_sudoku():
             continue
 
 if __name__ == "__main__":
+    for i in range(0
     # sudoku = ota_sudoku()
     # print("Ok, lähdetään ratkaisemaan")
     # print("Annettu sudoku")
@@ -293,20 +301,20 @@ if __name__ == "__main__":
     # time.sleep(3)
     # ratkaistu = ratkaise_sudoku(sudoku_keskitaso)
  
-    sudoku_vaikea = [
-        [8, 5, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 1, 3, 0, 0, 0, 0],
-        [4, 0, 0, 0, 0, 0, 0, 9, 5],
-        [0, 2, 0, 9, 0, 8, 0, 0, 0],
-        [5, 8, 1, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 7, 0, 6],
-        [0, 0, 7, 0, 0, 1, 8, 0, 0],
-        [0, 0, 0, 8, 0, 9, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 2, 1, 3]]
-    print("Vaikea sudoku: ")
-    tulosta_sudoku(sudoku_vaikea)
-    time.sleep(1)
-    vaikean_ratkaisu = ratkaise_sudoku(sudoku_vaikea)
+    # sudoku_vaikea = [
+    #     [8, 5, 0, 0, 0, 0, 0, 0, 0],
+    #     [0, 0, 0, 1, 3, 0, 0, 0, 0],
+    #     [4, 0, 0, 0, 0, 0, 0, 9, 5],
+    #     [0, 2, 0, 9, 0, 8, 0, 0, 0],
+    #     [5, 8, 1, 0, 0, 0, 0, 0, 0],
+    #     [0, 0, 0, 0, 0, 0, 7, 0, 6],
+    #     [0, 0, 7, 0, 0, 1, 8, 0, 0],
+    #     [0, 0, 0, 8, 0, 9, 0, 0, 0],
+    #     [0, 0, 0, 0, 0, 0, 2, 1, 3]]
+    # print("Vaikea sudoku: ")
+    # tulosta_sudoku(sudoku_vaikea)
+    # time.sleep(1)
+    # vaikean_ratkaisu = ratkaise_sudoku(sudoku_vaikea)
 
     # sudoku_extreme = [
     #     [0, 0, 2, 0, 0, 6, 0, 0, 5],

@@ -16,10 +16,17 @@ def ratkaise_sudoku(sisaan_sudoku: list) -> list:
                 for j in range(5):
                     print()
     while True:
-        tarkasta_vaajaamattomat(sudoku, mahdolliset)
-        syvatarkasta_blokeista(sudoku, mahdolliset)
-        syvatarkasta_rivilta(sudoku, mahdolliset)
-        syvatarkasta_sarakkeesta(sudoku, mahdolliset)
+        edistysta = 0
+        edistysta += tarkasta_vaajaamattomat(sudoku, mahdolliset)
+        edistysta += syvatarkasta_blokeista(sudoku, mahdolliset)
+        edistysta += syvatarkasta_rivilta(sudoku, mahdolliset)
+        edistysta += syvatarkasta_sarakkeesta(sudoku, mahdolliset)
+        
+        if edistysta == 0:
+            print("Järeät käyttöön")
+            time.sleep(1)
+            pass # tänne järeämmät metodit kun ylläolevat helpommat on käytetty
+        edistysta = 0
         
         if onko_ratkaistu(sudoku):
             tulosta_sudoku(sudoku)
@@ -57,7 +64,7 @@ def onko_kelvollinen(sudoku: list) -> bool:
     time.sleep(2)
     return True
 
-def tarkasta_vaajaamattomat(sudoku:list, mahdolliset: list):
+def tarkasta_vaajaamattomat(sudoku:list, mahdolliset: list) -> int:
     for y in range(9):
         for x in range(9):
             if len(mahdolliset[y][x]) == 1:
@@ -65,8 +72,10 @@ def tarkasta_vaajaamattomat(sudoku:list, mahdolliset: list):
                 print("lisätään siis luku sudokuun")
                 lisaa_sudokuun(sudoku, y, x, mahdolliset[y][x][0], mahdolliset)
                 tulosta_sudoku(sudoku)
+                return 1
+    return 0
 
-def syvatarkasta_blokeista(sudoku:list, mahdolliset: list):
+def syvatarkasta_blokeista(sudoku:list, mahdolliset: list) -> int:
     for blokki in range(9):
         talon_mahdolliset = []
         for y, x in blokin_ruudut(blokki):
@@ -82,8 +91,10 @@ def syvatarkasta_blokeista(sudoku:list, mahdolliset: list):
                         print("lisätään siis luku sudokuun")
                         lisaa_sudokuun(sudoku, y, x, nro, mahdolliset)
                         tulosta_sudoku(sudoku)
+                        return 1
+    return 0
 
-def syvatarkasta_rivilta(sudoku:list, mahdolliset: list):
+def syvatarkasta_rivilta(sudoku:list, mahdolliset: list) -> int:
     for rivi in range(9):
         talon_mahdolliset = []
         for y, x in rivin_ruudut(rivi):
@@ -99,8 +110,10 @@ def syvatarkasta_rivilta(sudoku:list, mahdolliset: list):
                         print("lisätään siis luku sudokuun")
                         lisaa_sudokuun(sudoku, y, x, nro, mahdolliset)
                         tulosta_sudoku(sudoku)
+                        return 1
+    return 0
 
-def syvatarkasta_sarakkeesta(sudoku:list, mahdolliset: list):
+def syvatarkasta_sarakkeesta(sudoku:list, mahdolliset: list) -> int:
     for sarake in range(9):
         talon_mahdolliset = []
         for y, x in sarakkeen_ruudut(sarake):
@@ -116,7 +129,11 @@ def syvatarkasta_sarakkeesta(sudoku:list, mahdolliset: list):
                         print("lisätään siis luku sudokuun")
                         lisaa_sudokuun(sudoku, y, x, nro, mahdolliset)
                         tulosta_sudoku(sudoku)
+                        return 1
+    return 0
         
+def lukitut_ehdokkaat_1
+
 def alusta_sudoku() -> list:
     palautettava = []    
     for i in range(9):
@@ -301,11 +318,11 @@ def ota_sudoku():
 
 if __name__ == "__main__":
     
-    sudoku = ota_sudoku()
-    print("Ok, lähdetään ratkaisemaan")
-    print("Annettu sudoku")
-    tulosta_sudoku(sudoku)
-    ratkaise_sudoku(sudoku)
+    # sudoku = ota_sudoku()
+    # print("Ok, lähdetään ratkaisemaan")
+    # print("Annettu sudoku")
+    # tulosta_sudoku(sudoku)
+    # ratkaise_sudoku(sudoku)
 
     # sudoku_keskitaso = [
     #     [6, 0, 9, 0, 4, 0, 0, 0, 1],
@@ -332,27 +349,29 @@ if __name__ == "__main__":
     #     [0, 0, 7, 0, 0, 1, 8, 0, 0],
     #     [0, 0, 0, 8, 0, 9, 0, 0, 0],
     #     [0, 0, 0, 0, 0, 0, 2, 1, 3]]
+    # # ratkeaa
     # print("Vaikea sudoku: ")
     # tulosta_sudoku(sudoku_vaikea)
     # time.sleep(1)
     # vaikean_ratkaisu = ratkaise_sudoku(sudoku_vaikea)
 
-    # sudoku_extreme = [
-    #     [0, 0, 2, 0, 0, 6, 0, 0, 5],
-    #     [0, 7, 0, 0, 9, 0, 0, 8, 0],
-    #     [1, 0, 0, 2, 0, 0, 3, 0, 0],
-    #     [2, 0, 0, 1, 0, 0, 4, 0, 0],
-    #     [0, 1, 0, 0, 7, 0, 0, 9, 0],
-    #     [0, 0, 3, 0, 0, 8, 0, 0, 1],
-    #     [0, 0, 7, 0, 0, 9, 0, 0, 8],
-    #     [0, 2, 0, 0, 5, 0, 0, 4, 0],
-    #     [5, 0, 0, 7, 0, 0, 6, 0, 0]]
+    sudoku_extreme = [
+        [0, 0, 2, 0, 0, 6, 0, 0, 5],
+        [0, 7, 0, 0, 9, 0, 0, 8, 0],
+        [1, 0, 0, 2, 0, 0, 3, 0, 0],
+        [2, 0, 0, 1, 0, 0, 4, 0, 0],
+        [0, 1, 0, 0, 7, 0, 0, 9, 0],
+        [0, 0, 3, 0, 0, 8, 0, 0, 1],
+        [0, 0, 7, 0, 0, 9, 0, 0, 8],
+        [0, 2, 0, 0, 5, 0, 0, 4, 0],
+        [5, 0, 0, 7, 0, 0, 6, 0, 0]]
     
-    # print("Extreme sudoku: ")
-    # tulosta_sudoku(sudoku_extreme)
-    # time.sleep(1)
-    # extremen_ratkaisu = ratkaise_sudoku(sudoku_extreme)
-    # tulosta_sudoku(extremen_ratkaisu)
+    # ei ratkea... vielä!
+    print("Extreme sudoku: ")
+    tulosta_sudoku(sudoku_extreme)
+    time.sleep(1)
+    extremen_ratkaisu = ratkaise_sudoku(sudoku_extreme)
+    tulosta_sudoku(extremen_ratkaisu)
 
     # sudoku_egregious = [
     #     [0, 9, 0, 0, 1, 0, 0, 6, 0],

@@ -4,6 +4,8 @@
 # samalla rivillä, sitä numeroa ei voi olla samalla rivillä muissa blokeissa.
 
 
+
+
 import time
 
 def ratkaise_sudoku(sisaan_sudoku: list) -> list:
@@ -26,6 +28,7 @@ def ratkaise_sudoku(sisaan_sudoku: list) -> list:
             print("Järeät käyttöön")
             time.sleep(1)
             alaston_pari_talossa(sudoku, mahdolliset)
+            lukitut_kandidaatit_1(sudoku, mahdolliset)
             pass # tänne järeämmät metodit kun ylläolevat helpommat on käytetty
         edistysta = 0
         
@@ -233,11 +236,11 @@ def alaston_pari_talossa(sudoku: list, mahdolliset: list):
                         if mahdolliset[y][x] != list(osumat_blokissa):
                             if osumat_blokissa[0] in mahdolliset[y][x]:
                                 mahdolliset[y][x].remove(osumat_blokissa[0])
-                                print("Mahdollisista poistettu")
+                                print("Mahdollisista poistettu blokin alastoman parein perusteella")
                                 time.sleep(1)
                             if osumat_blokissa[1] in mahdolliset[y][x]:
                                 mahdolliset[y][x].remove(osumat_blokissa[1])
-                                print("Mahdollisista poistettu")
+                                print("Mahdollisista poistettu blokin alastoman parein perusteella")
                                 time.sleep(1)
 
                 elif len(osumat_blokissa) > 0 and j != osumat_blokissa:
@@ -266,11 +269,11 @@ def alaston_pari_talossa(sudoku: list, mahdolliset: list):
                         if mahdolliset[y][x] != list(osumat_rivilla):
                             if osumat_rivilla[0] in mahdolliset[y][x]:
                                 mahdolliset[y][x].remove(osumat_rivilla[0])
-                                print("Mahdollisista poistettu")
+                                print("Mahdollisista poistettu rivin alastoman parin perusteella")
                                 time.sleep(1)
                             if osumat_rivilla[1] in mahdolliset[y][x]:
                                 mahdolliset[y][x].remove(osumat_rivilla[1])
-                                print("Mahdollisista poistettu")
+                                print("Mahdollisista poistettu rivin alastoman parin perusteella")
                                 time.sleep(1)
 
                 elif len(osumat_rivilla) > 0 and j != osumat_rivilla:
@@ -299,11 +302,11 @@ def alaston_pari_talossa(sudoku: list, mahdolliset: list):
                         if mahdolliset[y][x] != list(osumat_sarakkeessa):
                             if osumat_sarakkeessa[0] in mahdolliset[y][x]:
                                 mahdolliset[y][x].remove(osumat_sarakkeessa[0])
-                                print("Mahdollisista poistettu")
+                                print("Mahdollisista poistettu sarakkeen alastoman parin perusteella")
                                 time.sleep(1)
                             if osumat_sarakkeessa[1] in mahdolliset[y][x]:
                                 mahdolliset[y][x].remove(osumat_sarakkeessa[1])
-                                print("Mahdollisista poistettu")
+                                print("Mahdollisista poistettu sarakkeen alastoman parin perusteella")
                                 time.sleep(1)
                 elif len(osumat_sarakkeessa) > 0 and j != osumat_sarakkeessa:
                     print(f"Omg toka alaston pari {j} samassa sarakkeessa {i}")
@@ -318,6 +321,47 @@ def alaston_pari_talossa(sudoku: list, mahdolliset: list):
                                 mahdolliset[y][x].remove(osumat_sarakkeessa[1])
                                 print("Mahdollisista poistettu sarakkeen tokan alastoman parin perusteella")
                                 time.sleep(1)
+
+def lukitut_kandidaatit_1(sudoku: list, mahdolliset: list):
+    print("Mennään lukittuihin kandidaatteihin #1")
+    for blokki in range(0,9):
+        blokin_mahdolliset = [mahdolliset[y][x] for y, x in blokin_ruudut(blokki)]
+        for nro in range(1, 10):
+            esiintymia = 0
+            for solun_mahdolliset in blokin_mahdolliset:
+                if nro in solun_mahdolliset:
+                    esiintymia += 1
+            if esiintymia > 0 and esiintymia <= 3 :
+                esiintymien_indeksit = []
+                esiintymien_hakukohta = 0
+                while len(esiintymien_indeksit) < esiintymia:
+                    if nro in blokin_mahdolliset[esiintymien_hakukohta]:
+                        esiintymien_indeksit.append(esiintymien_hakukohta)
+                    esiintymien_hakukohta += 1
+                esiintymien_rivit_blokissa = [i // 3 for i in esiintymien_indeksit]
+                esiintymien_sarakkeet_blokissa = [i % 3 for i in esiintymien_indeksit]
+                
+                absoluuttiset_koordinaatit = []
+                for j in range(esiintymia):
+                    absoluuttiset_koordinaatit.append(((blokki // 3) * 3 + esiintymien_rivit_blokissa[j], (blokki % 3) * 3 + esiintymien_sarakkeet_blokissa[j]))
+                if esiintymien_rivit_blokissa.count(esiintymien_rivit_blokissa[0]) == len(esiintymien_rivit_blokissa):
+                    for x in range(9):
+                        if (absoluuttiset_koordinaatit[0][0], x) not in absoluuttiset_koordinaatit and \
+                            nro in mahdolliset[absoluuttiset_koordinaatit[0][0]][x]:
+                            mahdolliset[absoluuttiset_koordinaatit[0][0]][x].remove(nro)
+                            print(f"Rivillä {absoluuttiset_koordinaatit[0][0]}: on blokin {blokki} kaikki {nro}:n esiintymät" + \
+                                f"poistetaan siis se mahdollisista kohdasta {mahdolliset[absoluuttiset_koordinaatit[0][0]][x]}")
+                            time.sleep(1)
+                if esiintymien_sarakkeet_blokissa.count(esiintymien_sarakkeet_blokissa[0]) == len(esiintymien_sarakkeet_blokissa):
+                    for y in range(9):
+                        if (y, absoluuttiset_koordinaatit[0][1]) not in absoluuttiset_koordinaatit and \
+                            nro in mahdolliset[y][absoluuttiset_koordinaatit[0][1]]:
+                            mahdolliset[y][absoluuttiset_koordinaatit[0][1]].remove(nro)
+                            print(f"Sarakkeessa {absoluuttiset_koordinaatit[0][1]}: on blokin {blokki} kaikki {nro}:n esiintymät" + \
+                                f"poistetaan siis se mahdollisista kohdasta {mahdolliset[absoluuttiset_koordinaatit[0][0]][x]}")
+                            time.sleep(1)
+                    
+                print("Lukitut kandidaatit kertaalleen laskettu")
 
 
 
@@ -420,6 +464,7 @@ def ota_sudoku():
             continue
 
 if __name__ == "__main__":
+    pass
     
     # sudoku = ota_sudoku()
     # print("Ok, lähdetään ratkaisemaan")
@@ -469,68 +514,83 @@ if __name__ == "__main__":
         [0, 2, 0, 0, 5, 0, 0, 4, 0],
         [5, 0, 0, 7, 0, 0, 6, 0, 0]]
     
-    # ei ratkea... vielä!
+    
     print("Extreme sudoku: ")
     tulosta_sudoku(sudoku_extreme)
-    time.sleep(0)
+    time.sleep(3)
     extremen_ratkaisu = ratkaise_sudoku(sudoku_extreme)
     tulosta_sudoku(extremen_ratkaisu)
+    # # ei ratkea... vielä!
+    sudoku_egregious = [
+        [0, 9, 0, 0, 1, 0, 0, 6, 0],
+        [8, 0, 0, 0, 0, 9, 0, 0, 3],
+        [0, 0, 0, 7, 0, 2, 0, 0, 0],
+        [0, 3, 8, 0, 0, 0, 9, 0, 0],
+        [9, 0, 0, 0, 0, 0, 0, 0, 7],
+        [0, 0, 5, 0, 0, 0, 6, 1, 0],
+        [0, 0, 0, 5, 0, 8, 0, 0, 0],
+        [3, 0, 0, 9, 0, 0, 0, 0, 4],
+        [0, 6, 0, 0, 7, 0, 0, 2, 0]
+    ]
+    ratkaise_sudoku(sudoku_egregious)
+    # # ei ole vielä ratkennut
 
-    # sudoku_egregious = [
-    #     [0, 9, 0, 0, 1, 0, 0, 6, 0],
-    #     [8, 0, 0, 0, 0, 9, 0, 0, 3],
-    #     [0, 0, 0, 7, 0, 2, 0, 0, 0],
-    #     [0, 3, 8, 0, 0, 0, 9, 0, 0],
-    #     [9, 0, 0, 0, 0, 0, 0, 0, 7],
-    #     [0, 0, 5, 0, 0, 0, 6, 1, 0],
-    #     [0, 0, 0, 5, 0, 8, 0, 0, 0],
-    #     [3, 0, 0, 9, 0, 0, 0, 0, 4],
-    #     [0, 6, 0, 0, 7, 0, 0, 2, 0]
-    # ]
-    # ratkaise_sudoku(sudoku_egregious)
+    sudoku_evil = [
+            [0, 0, 2, 6, 0, 0, 0, 0, 0],
+            [0, 6, 0, 4, 0, 5, 0, 8, 0],
+            [0, 0, 0, 9, 0, 0, 0, 0, 2],
+            [0, 8, 0, 0, 0, 0, 7, 5, 6],
+            [0, 0, 0, 0, 3, 0, 0, 0, 0],
+            [7, 2, 5, 0, 0, 0, 0, 3, 0],
+            [6, 0, 0, 0, 0, 8, 0, 0, 0],
+            [0, 1, 0, 3, 0, 6, 0, 4, 0],
+            [0, 0, 0, 0, 0, 9, 3, 0, 0]
+        ]
+    tulosta_sudoku(sudoku_evil)
+    time.sleep(3)
+    ratkaise_sudoku(sudoku_evil)
+    # # ei ole vielä ratkennut
 
-    # sudoku_evil = [
-    #         [0, 0, 2, 6, 0, 0, 0, 0, 0],
-    #         [0, 6, 0, 4, 0, 5, 0, 8, 0],
-    #         [0, 0, 0, 9, 0, 0, 0, 0, 2],
-    #         [0, 8, 0, 0, 0, 0, 7, 5, 6],
-    #         [0, 0, 0, 0, 3, 0, 0, 0, 0],
-    #         [7, 2, 5, 0, 0, 0, 0, 3, 0],
-    #         [6, 0, 0, 0, 0, 8, 0, 0, 0],
-    #         [0, 1, 0, 3, 0, 6, 0, 4, 0],
-    #         [0, 0, 0, 0, 0, 9, 3, 0, 0]
+    naked_pair_rivi_5 = [
+            [1, 6, 7, 0, 0, 8, 0, 0, 0],
+            [0, 0, 0, 2, 0, 0, 0, 0, 0],
+            [0, 8, 0, 0, 0, 0, 0, 0, 0],
+
+            [0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 5, 0, 0, 0, 0, 8, 2, 3],
+            [0, 3, 4, 0, 8, 0, 0, 0, 9],
+
+            [0, 0, 0, 8, 6, 0, 9, 0, 0],
+            [5, 0, 0, 0, 9, 1, 0, 0, 4],
+            [7, 0, 0, 0, 0, 5, 3, 0, 0]
+        ]
+    print(naked_pair_rivi_5)
+    if onko_kelvollinen(naked_pair_rivi_5):
+        ratkaise_sudoku(naked_pair_rivi_5)
+    # # ei ole vielä ratkennut
+
+    # sudoku_forkids = [
+    #     [8, 0, 6, 0, 0, 0, 0, 0, 0], 
+    #     [0, 0, 0, 6, 0, 0, 0, 0, 0], 
+    #     [0, 0, 0, 9, 0, 3, 2, 0, 0], 
+    #     [9, 3, 0, 2, 0, 0, 0, 1, 0], 
+    #     [0, 0, 0, 0, 0, 0, 0, 2, 6], 
+    #     [0, 0, 0, 3, 4, 0, 5, 0, 0], 
+    #     [1, 0, 0, 0, 8, 0, 0, 0, 0], 
+    #     [3, 0, 0, 0, 0, 7, 0, 0, 4], 
+    #     [0, 0, 4, 0, 0, 0, 0, 0, 0]
     #     ]
-    # tulosta_sudoku(sudoku_evil)
-    # time.sleep(3)
-    # ratkaise_sudoku(sudoku_evil)
-
-    # naked_pair_rivi_5 = [
-    #         [1, 6, 7, 0, 0, 8, 0, 0, 0],
-    #         [0, 0, 0, 2, 0, 0, 0, 0, 0],
-    #         [0, 8, 0, 0, 0, 0, 0, 0, 0],
+    # # ratkeaa
+    # sudoku_tyhja = [
+    #         [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    #         [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    #         [0, 0, 0, 0, 0, 0, 0, 0, 0],
 
     #         [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    #         [0, 5, 0, 0, 0, 0, 8, 2, 3],
-    #         [0, 3, 4, 0, 8, 0, 0, 0, 9],
+    #         [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    #         [0, 0, 0, 0, 0, 0, 0, 0, 0],
 
-    #         [0, 0, 0, 8, 6, 0, 9, 0, 0],
-    #         [5, 0, 0, 0, 9, 1, 0, 0, 4],
-    #         [7, 0, 0, 0, 0, 5, 3, 0, 0]
+    #         [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    #         [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    #         [0, 0, 0, 0, 0, 0, 0, 0, 0]
     #     ]
-    # print(naked_pair_rivi_5)
-    # if onko_kelvollinen(naked_pair_rivi_5):
-    #     ratkaise_sudoku(naked_pair_rivi_5)
-
-# # sudoku_tyhja = [
-#         [0, 0, 0, 0, 0, 0, 0, 0, 0],
-#         [0, 0, 0, 0, 0, 0, 0, 0, 0],
-#         [0, 0, 0, 0, 0, 0, 0, 0, 0],
-
-#         [0, 0, 0, 0, 0, 0, 0, 0, 0],
-#         [0, 0, 0, 0, 0, 0, 0, 0, 0],
-#         [0, 0, 0, 0, 0, 0, 0, 0, 0],
-
-#         [0, 0, 0, 0, 0, 0, 0, 0, 0],
-#         [0, 0, 0, 0, 0, 0, 0, 0, 0],
-#         [0, 0, 0, 0, 0, 0, 0, 0, 0]
-#     ]

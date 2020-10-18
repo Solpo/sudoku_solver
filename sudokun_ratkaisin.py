@@ -245,7 +245,6 @@ def alaston_pari_talossa(sudoku: list, mahdolliset: list):
 
                 elif len(osumat_blokissa) > 0 and j != osumat_blokissa:
                     print(f"Omg toka alaston pari {j} samasta blokista {i}")
-                    time.sleep(2)
                     for y, x in blokin_ruudut(i):
                         if mahdolliset[y][x] != list(osumat_blokissa):
                             if osumat_blokissa[0] in mahdolliset[y][x]:
@@ -264,7 +263,6 @@ def alaston_pari_talossa(sudoku: list, mahdolliset: list):
                 print(f"omg alaston pari {j} rivillä {i}")
                 if len(osumat_rivilla) == 0:
                     osumat_rivilla = (j)
-                    time.sleep(1)
                     for y, x in rivin_ruudut(i):
                         if mahdolliset[y][x] != list(osumat_rivilla):
                             if osumat_rivilla[0] in mahdolliset[y][x]:
@@ -278,7 +276,6 @@ def alaston_pari_talossa(sudoku: list, mahdolliset: list):
 
                 elif len(osumat_rivilla) > 0 and j != osumat_rivilla:
                     print(f"Omg toka alaston pari {j} samalta riviltä {i}")
-                    time.sleep(2)
                     for y, x in rivin_ruudut(i):
                         if mahdolliset[y][x] != list(osumat_rivilla):
                             if osumat_rivilla[0] in mahdolliset[y][x]:
@@ -297,7 +294,6 @@ def alaston_pari_talossa(sudoku: list, mahdolliset: list):
                 print(f"omg alaston pari {j} sarakkeessa {i}")
                 if len(osumat_sarakkeessa) == 0:
                     osumat_sarakkeessa = (j)
-                    time.sleep(1)
                     for y, x in sarakkeen_ruudut(i):
                         if mahdolliset[y][x] != list(osumat_sarakkeessa):
                             if osumat_sarakkeessa[0] in mahdolliset[y][x]:
@@ -310,7 +306,6 @@ def alaston_pari_talossa(sudoku: list, mahdolliset: list):
                                 time.sleep(1)
                 elif len(osumat_sarakkeessa) > 0 and j != osumat_sarakkeessa:
                     print(f"Omg toka alaston pari {j} samassa sarakkeessa {i}")
-                    time.sleep(2)
                     for y, x in sarakkeen_ruudut(i):
                         if mahdolliset[y][x] != list(osumat_sarakkeessa):
                             if osumat_sarakkeessa[0] in mahdolliset[y][x]:
@@ -503,52 +498,54 @@ if __name__ == "__main__":
     # time.sleep(1)
     # vaikean_ratkaisu = ratkaise_sudoku(sudoku_vaikea)
 
-    sudoku_extreme = [
-        [0, 0, 2, 0, 0, 6, 0, 0, 5],
-        [0, 7, 0, 0, 9, 0, 0, 8, 0],
-        [1, 0, 0, 2, 0, 0, 3, 0, 0],
-        [2, 0, 0, 1, 0, 0, 4, 0, 0],
-        [0, 1, 0, 0, 7, 0, 0, 9, 0],
-        [0, 0, 3, 0, 0, 8, 0, 0, 1],
-        [0, 0, 7, 0, 0, 9, 0, 0, 8],
-        [0, 2, 0, 0, 5, 0, 0, 4, 0],
-        [5, 0, 0, 7, 0, 0, 6, 0, 0]]
+    # sudoku_extreme = [
+    #     [0, 0, 2, 0, 0, 6, 0, 0, 5],
+    #     [0, 7, 0, 0, 9, 0, 0, 8, 0],
+    #     [1, 0, 0, 2, 0, 0, 3, 0, 0],
+    #     [2, 0, 0, 1, 0, 0, 4, 0, 0],
+    #     [0, 1, 0, 0, 7, 0, 0, 9, 0],
+    #     [0, 0, 3, 0, 0, 8, 0, 0, 1],
+    #     [0, 0, 7, 0, 0, 9, 0, 0, 8],
+    #     [0, 2, 0, 0, 5, 0, 0, 4, 0],
+    #     [5, 0, 0, 7, 0, 0, 6, 0, 0]]
     
     
-    print("Extreme sudoku: ")
-    tulosta_sudoku(sudoku_extreme)
-    time.sleep(3)
-    extremen_ratkaisu = ratkaise_sudoku(sudoku_extreme)
-    tulosta_sudoku(extremen_ratkaisu)
+    # print("Extreme sudoku: ")
+    # tulosta_sudoku(sudoku_extreme)
+    # time.sleep(3)
+    # extremen_ratkaisu = ratkaise_sudoku(sudoku_extreme)
+    # tulosta_sudoku(extremen_ratkaisu)
     # # ei ratkea... vielä!
-    sudoku_egregious = [
-        [0, 9, 0, 0, 1, 0, 0, 6, 0],
-        [8, 0, 0, 0, 0, 9, 0, 0, 3],
-        [0, 0, 0, 7, 0, 2, 0, 0, 0],
-        [0, 3, 8, 0, 0, 0, 9, 0, 0],
-        [9, 0, 0, 0, 0, 0, 0, 0, 7],
-        [0, 0, 5, 0, 0, 0, 6, 1, 0],
-        [0, 0, 0, 5, 0, 8, 0, 0, 0],
-        [3, 0, 0, 9, 0, 0, 0, 0, 4],
-        [0, 6, 0, 0, 7, 0, 0, 2, 0]
-    ]
-    ratkaise_sudoku(sudoku_egregious)
+    # sudoku_egregious = [
+    #     [0, 9, 0, 0, 1, 0, 0, 6, 0],
+    #     [8, 0, 0, 0, 0, 9, 0, 0, 3],
+    #     [0, 0, 0, 7, 0, 2, 0, 0, 0],
+    #     [0, 3, 8, 0, 0, 0, 9, 0, 0],
+    #     [9, 0, 0, 0, 0, 0, 0, 0, 7],
+    #     [0, 0, 5, 0, 0, 0, 6, 1, 0],
+    #     [0, 0, 0, 5, 0, 8, 0, 0, 0],
+    #     [3, 0, 0, 9, 0, 0, 0, 0, 4],
+    #     [0, 6, 0, 0, 7, 0, 0, 2, 0]
+    # ]
+    # print("Sudoku egregious")
+    # time.sleep(3)
+    # ratkaise_sudoku(sudoku_egregious)
     # # ei ole vielä ratkennut
 
-    sudoku_evil = [
-            [0, 0, 2, 6, 0, 0, 0, 0, 0],
-            [0, 6, 0, 4, 0, 5, 0, 8, 0],
-            [0, 0, 0, 9, 0, 0, 0, 0, 2],
-            [0, 8, 0, 0, 0, 0, 7, 5, 6],
-            [0, 0, 0, 0, 3, 0, 0, 0, 0],
-            [7, 2, 5, 0, 0, 0, 0, 3, 0],
-            [6, 0, 0, 0, 0, 8, 0, 0, 0],
-            [0, 1, 0, 3, 0, 6, 0, 4, 0],
-            [0, 0, 0, 0, 0, 9, 3, 0, 0]
-        ]
-    tulosta_sudoku(sudoku_evil)
-    time.sleep(3)
-    ratkaise_sudoku(sudoku_evil)
+    # sudoku_evil = [
+    #         [0, 0, 2, 6, 0, 0, 0, 0, 0],
+    #         [0, 6, 0, 4, 0, 5, 0, 8, 0],
+    #         [0, 0, 0, 9, 0, 0, 0, 0, 2],
+    #         [0, 8, 0, 0, 0, 0, 7, 5, 6],
+    #         [0, 0, 0, 0, 3, 0, 0, 0, 0],
+    #         [7, 2, 5, 0, 0, 0, 0, 3, 0],
+    #         [6, 0, 0, 0, 0, 8, 0, 0, 0],
+    #         [0, 1, 0, 3, 0, 6, 0, 4, 0],
+    #         [0, 0, 0, 0, 0, 9, 3, 0, 0]
+    #     ]
+    # print("Sudoku evil")
+    # time.sleep(3)
+    # ratkaise_sudoku(sudoku_evil)
     # # ei ole vielä ratkennut
 
     naked_pair_rivi_5 = [
@@ -567,7 +564,7 @@ if __name__ == "__main__":
     print(naked_pair_rivi_5)
     if onko_kelvollinen(naked_pair_rivi_5):
         ratkaise_sudoku(naked_pair_rivi_5)
-    # # ei ole vielä ratkennut
+    # # Ratkesi kun naked pairit oli implementoitu
 
     # sudoku_forkids = [
     #     [8, 0, 6, 0, 0, 0, 0, 0, 0], 

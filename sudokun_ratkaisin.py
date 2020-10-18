@@ -1,4 +1,3 @@
-# ögöööö
 # Nyt kaikki ruudut, jotka pystyy vääjäämättä ratkaisemaan, ratkaistaan.
 # Seuraava askel: Poistaa mahdollisista kaikki, jotka vääjäämättä menevät muualle.
 # Esim: Jos samassa blokissa kaikki mahdolliset tietyn numeron paikat ovat

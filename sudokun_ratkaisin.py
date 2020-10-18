@@ -25,7 +25,6 @@ def ratkaise_sudoku(sisaan_sudoku: list) -> list:
             tulosta_sudoku(sudoku)
             return sudoku
 
-
 def onko_ratkaistu(sudoku: list) -> bool:
     nollia_jaljella = False
     for y in range(9):
@@ -271,7 +270,6 @@ def ota_sudoku():
                 continue
         except (KeyError, ValueError):
             continue
-
 
 if __name__ == "__main__":
     # sudoku = ota_sudoku()

@@ -1,9 +1,7 @@
-# Seuraavaksi: etsi_mahdollisista_talossa
+# Seuraavaksi: naked triples
+# äsken tehty: lukitut kandidaatit 2
 # Ehkä: Tätä käyttävät lyhyet erikoisversiot ..._mahdollisista_rivilla/sarakkeessa/blokissa
 # lskdjflskdjf
-
-
-
 
 
 import time
@@ -27,12 +25,13 @@ def ratkaise_sudoku(sisaan_sudoku: list) -> list:
         
         if edistysta == 0:
             print("Järeät käyttöön")
-            time.sleep(1)
             edistysta += x_wing(sudoku, mahdolliset)
             edistysta += alaston_pari_talossa(sudoku, mahdolliset)
             edistysta += lukitut_kandidaatit_1(sudoku, mahdolliset)
+            edistysta += lukitut_kandidaatit_2(sudoku, mahdolliset)
             if edistysta == 0:
                 print("Taitaa olla jumissa")
+                time.sleep(0.5)
         edistysta = 0
         
         if onko_ratkaistu(sudoku):
@@ -49,28 +48,6 @@ def onko_ratkaistu(sudoku: list) -> bool:
     if not nollia_jaljella:
         print("Sudoku ratkaistu:")
         return True
-
-def onko_kelvollinen(sudoku: list) -> bool:
-    for nro_talo in range(9):
-        blokki = [sudoku[y][x] for (y, x) in blokin_ruudut(nro_talo)]
-        rivi = [sudoku[y][x] for (y, x) in rivin_ruudut(nro_talo)]
-        sarake = [sudoku[y][x] for (y, x) in sarakkeen_ruudut(nro_talo)]
-
-        for i in range(1,10):
-            if blokki.count(i) > 1:
-                print(f"Blokissa {nro_talo} virhe: enemmän kuin yksi {i}")
-                return False
-            if rivi.count(i) > 1:
-                print(f"Rivillä {nro_talo} virhe: enemmän kuin yksi {i}")
-                time.sleep(2)
-                return False
-            if sarake.count(i) > 1:
-                print(f"Sarakkeessa {nro_talo} virhe: enemmän kuin yksi {i}")
-                return False
-    
-    print("Kelpaa")
-    time.sleep(2)
-    return True
 
 def etsi_mahdollisista_talossa(nro: int, tyyppi: str, talo_nro: int, mahdolliset: list) -> int:
     if tyyppi.lower() not in ["r", "s", "b"]:
@@ -91,6 +68,80 @@ def etsi_mahdollisista_talossa(nro: int, tyyppi: str, talo_nro: int, mahdolliset
         if nro in mahdolliset[y][x]:
             osumien_koordinaatit.append((y, x))
     return (osumien_koordinaatit)
+
+def tulosta_sudoku(sudoku: list):
+    for i in range(9):
+        for j in range(0, len(sudoku[i]), 3):
+            print(viivan_tulostus(sudoku[i][j]), end=" ")
+            print(viivan_tulostus(sudoku[i][j + 1]), end=" ")
+            print(viivan_tulostus(sudoku[i][j + 2]), end="  ")
+        print()
+        if (i) % 3 == 2:
+            print()
+    # time.sleep(0.5)
+			
+def viivan_tulostus(i: int):
+    if i == 0:
+        return "_"
+    else:
+        return i
+
+def ruudun_blokki(rivi: int, sarake: int) -> int:
+    if rivi <= 2:
+        if sarake <= 2:
+            return 0
+        elif sarake <= 5:
+            return 1
+        elif sarake <= 8:
+            return 2
+    elif rivi <= 5:
+        if sarake <= 2:
+            return 3
+        elif sarake <= 5:
+            return 4
+        elif sarake <= 8:
+            return 5
+    elif rivi <= 8:
+        if sarake <= 2:
+            return 6
+        elif sarake <= 5:
+            return 7
+        elif sarake <= 8:
+            return 8
+        
+def blokin_ruudut(blokki: int) -> list:
+    i = blokki // 3 * 3
+    j = blokki % 3 * 3
+    palautettavat_ruudut = []
+    for rivi in range(i, i + 3):
+        for sarake in range(j, j + 3):
+            palautettavat_ruudut.append((rivi, sarake))
+    return palautettavat_ruudut
+
+def sarakkeen_ruudut(sarake: int) -> list:
+    palautettavat_ruudut = [(i, sarake) for i in range(9)]
+    return palautettavat_ruudut
+
+def rivin_ruudut(rivi: int) -> list:
+    palautettavat_ruudut = [(rivi, i) for i in range(9)]
+    return palautettavat_ruudut
+
+def muut_linjat_blokissa(linja: int) -> tuple:
+    if linja < 0 or linja > 8:
+        raise ValueError("Pitää olla 0 - 8")
+    levea = [i for i in range((linja // 3 * 3), ((linja // 3 * 3) + 3))]
+    levea.remove(linja)
+    return tuple(levea)
+
+def muiden_kaistojen_linjat(kaista: int) -> list:
+    if kaista not in range(3):
+        raise ValueError("Kaistan oltava väliltä 0 - 2")
+    palautettavat_linjat = []
+    siivotut_kaistat = [0, 1, 2]
+    siivotut_kaistat.remove(kaista)
+    for kaista in siivotut_kaistat:
+        palautettavat_linjat += [kaista * 3, kaista * 3 + 1, kaista * 3 + 2]
+    return palautettavat_linjat
 
 def tarkasta_vaajaamattomat(sudoku:list, mahdolliset: list) -> int:
     for y in range(9):
@@ -160,86 +211,6 @@ def syvatarkasta_sarakkeesta(sudoku:list, mahdolliset: list) -> int:
                         return 1
     return 0
         
-def alusta_sudoku() -> list:
-    palautettava = []    
-    for i in range(9):
-        palautettava.append([])
-        for j in range(9):
-            palautettava[i].append(0)
-    return palautettava
-
-def alusta_mahdolliset() -> list:
-    mahdolliset = []
-    for i in range(9):
-        mahdolliset.append([])
-        for j in range(9):
-            mahdolliset[i].append([1, 2, 3, 4, 5, 6, 7, 8, 9])
-    return mahdolliset
-
-def tulosta_sudoku(sudoku: list):
-    for i in range(9):
-        for j in range(0, len(sudoku[i]), 3):
-            print(viivan_tulostus(sudoku[i][j]), end=" ")
-            print(viivan_tulostus(sudoku[i][j + 1]), end=" ")
-            print(viivan_tulostus(sudoku[i][j + 2]), end="  ")
-        print()
-        if (i) % 3 == 2:
-            print()
-    # time.sleep(0.5)
-			
-def viivan_tulostus(i: int):
-    if i == 0:
-        return "_"
-    else:
-        return i
-
-def ruudun_blokki(rivi: int, sarake: int) -> int:
-    if rivi <= 2:
-        if sarake <= 2:
-            return 0
-        elif sarake <= 5:
-            return 1
-        elif sarake <= 8:
-            return 2
-    elif rivi <= 5:
-        if sarake <= 2:
-            return 3
-        elif sarake <= 5:
-            return 4
-        elif sarake <= 8:
-            return 5
-    elif rivi <= 8:
-        if sarake <= 2:
-            return 6
-        elif sarake <= 5:
-            return 7
-        elif sarake <= 8:
-            return 8
-        
-def blokin_ruudut(blokki: int) -> list:
-    i = blokki // 3 * 3
-    j = blokki % 3 * 3
-    palautettavat_ruudut = []
-    for rivi in range(i, i + 3):
-        for sarake in range(j, j + 3):
-            palautettavat_ruudut.append((rivi, sarake))
-    return palautettavat_ruudut
-
-def sarakkeen_ruudut(sarake: int) -> list:
-    palautettavat_ruudut = [(i, sarake) for i in range(9)]
-    return palautettavat_ruudut
-
-def rivin_ruudut(rivi: int) -> list:
-    palautettavat_ruudut = [(rivi, i) for i in range(9)]
-    return palautettavat_ruudut
-
-def muut_linjat_blokissa(linja: int) -> tuple:
-    if linja < 0 or linja > 8:
-        raise ValueError("Pitää olla 0 - 8")
-    levea = [i for i in range((linja // 3 * 3), ((linja // 3 * 3) + 3))]
-    levea.remove(linja)
-    return tuple(levea)
-
 def alaston_pari_talossa(sudoku: list, mahdolliset: list) -> int:
     eteni = 0
     for talon_nro in range(0,9):
@@ -249,7 +220,6 @@ def alaston_pari_talossa(sudoku: list, mahdolliset: list) -> int:
             if blokin_mahdolliset.count(ruudun_mahdolliset) == 2 and len(ruudun_mahdolliset) == 2:
                 if len(osumat_blokissa) == 0:
                     osumat_blokissa = (ruudun_mahdolliset)
-                    time.sleep(1)
                     for y, x in blokin_ruudut(talon_nro):
                         if mahdolliset[y][x] != list(osumat_blokissa):
                             if osumat_blokissa[0] in mahdolliset[y][x]:
@@ -338,7 +308,6 @@ def alaston_pari_talossa(sudoku: list, mahdolliset: list) -> int:
 
 def lukitut_kandidaatit_1(sudoku: list, mahdolliset: list) -> int:
     eteni = 0
-    print("Mennään lukittuihin kandidaatteihin #1")
     for blokki in range(0,9):
         blokin_mahdolliset = [mahdolliset[y][x] for y, x in blokin_ruudut(blokki)]
         for nro in range(1, 10):
@@ -366,7 +335,6 @@ def lukitut_kandidaatit_1(sudoku: list, mahdolliset: list) -> int:
                             mahdolliset[absoluuttiset_koordinaatit[0][0]][x].remove(nro)
                             print(f"Rivillä {absoluuttiset_koordinaatit[0][0]}: on blokin {blokki} kaikki {nro}:n esiintymät" + \
                                 f"poistetaan siis se mahdollisista kohdasta {mahdolliset[absoluuttiset_koordinaatit[0][0]][x]}")
-                            time.sleep(1)
                             eteni += 1
                 if esiintymien_sarakkeet_blokissa.count(esiintymien_sarakkeet_blokissa[0]) == len(esiintymien_sarakkeet_blokissa):
                     for y in range(9):
@@ -375,10 +343,49 @@ def lukitut_kandidaatit_1(sudoku: list, mahdolliset: list) -> int:
                             mahdolliset[y][absoluuttiset_koordinaatit[0][1]].remove(nro)
                             print(f"Sarakkeessa {absoluuttiset_koordinaatit[0][1]}: on blokin {blokki} kaikki {nro}:n esiintymät" + \
                                 f"poistetaan siis se mahdollisista kohdasta {mahdolliset[absoluuttiset_koordinaatit[0][0]][x]}")
-                            time.sleep(1)
                             eteni += 1
                     
                 print("Lukitut kandidaatit kertaalleen laskettu")
+    return eteni
+
+def lukitut_kandidaatit_2(sudoku: list, mahdolliset: list) -> int:
+    eteni = 0
+    for nro in range(7, 8):
+        for rivi in range(0,9):
+            mahdollisen_paikat_rivilla = []
+            for ruutu in rivin_ruudut(rivi):
+                if nro in mahdolliset[ruutu[0]][ruutu[1]]:
+                    mahdollisen_paikat_rivilla.append(ruutu)
+            if len(mahdollisen_paikat_rivilla) > 1:
+                osumien_sarakkeet = []
+                for osuma in mahdollisen_paikat_rivilla:
+                    osumien_sarakkeet.append(osuma[1])
+                osumien_kaistat = [sarake // 3 for sarake in osumien_sarakkeet]
+                if len(set(osumien_kaistat)) == 1:
+                    siivottava_blokki = ruudun_blokki(mahdollisen_paikat_rivilla[0][0], mahdollisen_paikat_rivilla[0][1])
+                    for y, x in blokin_ruudut(siivottava_blokki):
+                        if (y, x) not in mahdollisen_paikat_rivilla and nro in mahdolliset[y][x]:
+                            mahdolliset[y][x].remove(nro)
+                            print(f"Poistettu {nro} mahdollisista ruudussa {y},{x} (lukitut kandidaatit 2)")
+                            time.sleep(1)
+
+        for sarake in range(0,9):
+            mahdollisen_paikat_sarakkeessa = []
+            for ruutu in sarakkeen_ruudut(sarake):
+                if nro in mahdolliset[ruutu[0]][ruutu[1]]:
+                    mahdollisen_paikat_sarakkeessa.append(ruutu)
+            if len(mahdollisen_paikat_sarakkeessa) > 1:
+                osumien_rivit = []
+                for osuma in mahdollisen_paikat_sarakkeessa:
+                    osumien_rivit.append(osuma[0])
+                osumien_kaistat = [rivi // 3 for rivi in osumien_rivit]
+                if len(set(osumien_kaistat)) == 1:
+                    siivottava_blokki = ruudun_blokki(mahdollisen_paikat_sarakkeessa[0][0], mahdollisen_paikat_sarakkeessa[0][1])
+                    for y, x in blokin_ruudut(siivottava_blokki):
+                        if (y, x) not in mahdollisen_paikat_sarakkeessa and nro in mahdolliset[y][x]:
+                            mahdolliset[y][x].remove(nro)
+                            print(f"Poistettu {nro} mahdollisista ruudussa {y},{x} (lukitut kandidaatit 2)")
+                            time.sleep(1)
     return eteni
 
 def x_wing(sudoku: list, mahdolliset: list) -> int:
@@ -401,7 +408,6 @@ def x_wing(sudoku: list, mahdolliset: list) -> int:
                                         mahdolliset[poiston_rivi][poiston_sarake].remove(nro)
                                         print(f"X-wingin perusteella poistettu {nro} ruudun [{poiston_rivi}, {poiston_sarake}] mahdollisista.")
                                         eteni += 1
-                                        time.sleep(1)
         # sarake
         for talon_nro in range(9):
             pari = etsi_mahdollisista_talossa(nro, "s", talon_nro, mahdolliset)
@@ -419,7 +425,6 @@ def x_wing(sudoku: list, mahdolliset: list) -> int:
                                         mahdolliset[poiston_rivi][poiston_sarake].remove(nro)
                                         print(f"X-wingin perusteella poistettu {nro} ruudun [{poiston_rivi}, {poiston_sarake}] mahdollisista.")
                                         eteni += 1
-                                        time.sleep(1)
     return eteni
      
 def poista_mahdollisista_rivilla(numero: int, rivi: int, mahdolliset: list): 
@@ -443,6 +448,47 @@ def lisaa_sudokuun(sudoku: list, rivi: int, sarake: int, numero: int, mahdollise
     poista_mahdollisista_sarakkeessa(numero, sarake, mahdolliset)
     poista_mahdollisista_blokissa(numero, ruudun_blokki(rivi, sarake), mahdolliset)
     mahdolliset[rivi][sarake] = []
+
+def ota_sudoku():
+    palautettava = []
+    rivinro = 0
+    while True:    
+        while len(palautettava) < 9:
+            palautettava.append(ota_rivi(rivinro))
+            rivinro = len(palautettava)
+        print("Sudokusi alla. Jos olet tyytyväinen, paina Enter, muuten anna korjattavan rivin numero (0 - 8)")
+        print("Käskyllä i# sijoitetaan riville # uusi rivi ja siirretään muita 1 alaspäin")
+        tulosta_sudoku(palautettava)
+        print()
+        try:
+            komento = input("Korjattavan rivin numero tai tyhjä = OK: ")
+            if komento == "":
+                print("\n")
+                if not onko_kelvollinen_sudoku(palautettava):
+                    continue
+                return palautettava
+            
+            elif komento[0].lower() == "i":
+                rivinro = int(komento[1])
+                if rivinro > 8 or rivinro < 0:
+                    raise ValueError
+                elif rivinro == 8:
+                    palautettava[8] = ota_rivi(rivinro)
+                else:
+                    for i in range(7, rivinro - 1, -1):
+                        palautettava[i+1] = palautettava[i]
+                    palautettava[rivinro] = ota_rivi(rivinro)
+
+            else:
+                rivinro = int(komento)
+                if rivinro < 0 or rivinro > 8:
+                    print()
+                    print("Rivinumeron oltava väliltä 0 - 8")
+                    raise ValueError
+                palautettava[rivinro] = ota_rivi(rivinro)
+                continue
+        except (KeyError, ValueError):
+            continue
 
 def ota_rivi(rivinro: int) -> list:
     while True:
@@ -479,87 +525,53 @@ def ota_rivi(rivinro: int) -> list:
             print()
             continue
 
-def ota_sudoku():
-    palautettava = []
-    rivinro = 0
-    while True:    
-        while len(palautettava) < 9:
-            palautettava.append(ota_rivi(rivinro))
-            rivinro = len(palautettava)
-        print("Sudokusi alla. Jos olet tyytyväinen, paina Enter, muuten anna korjattavan rivin numero (0 - 8)")
-        print("Käskyllä i# sijoitetaan riville # uusi rivi ja siirretään muita 1 alaspäin")
-        tulosta_sudoku(palautettava)
-        print()
-        try:
-            komento = input("Korjattavan rivin numero tai tyhjä = OK: ")
-            if komento == "":
-                print("\n")
-                if not onko_kelvollinen(palautettava):
-                    continue
-                return palautettava
-            
-            elif komento[0].lower() == "i":
-                rivinro = int(komento[1])
-                if rivinro > 8 or rivinro < 0:
-                    raise ValueError
-                elif rivinro == 8:
-                    palautettava[8] = ota_rivi(rivinro)
-                else:
-                    for i in range(7, rivinro - 1, -1):
-                        palautettava[i+1] = palautettava[i]
-                    palautettava[rivinro] = ota_rivi(rivinro)
+def onko_kelvollinen_sudoku(sudoku: list) -> bool:
+    for nro_talo in range(9):
+        blokki = [sudoku[y][x] for (y, x) in blokin_ruudut(nro_talo)]
+        rivi = [sudoku[y][x] for (y, x) in rivin_ruudut(nro_talo)]
+        sarake = [sudoku[y][x] for (y, x) in sarakkeen_ruudut(nro_talo)]
 
-            else:
-                rivinro = int(komento)
-                if rivinro < 0 or rivinro > 8:
-                    print()
-                    print("Rivinumeron oltava väliltä 0 - 8")
-                    raise ValueError
-                palautettava[rivinro] = ota_rivi(rivinro)
-                continue
-        except (KeyError, ValueError):
-            continue
+        for i in range(1,10):
+            if blokki.count(i) > 1:
+                print(f"Blokissa {nro_talo} virhe: enemmän kuin yksi {i}")
+                return False
+            if rivi.count(i) > 1:
+                print(f"Rivillä {nro_talo} virhe: enemmän kuin yksi {i}")
+                time.sleep(2)
+                return False
+            if sarake.count(i) > 1:
+                print(f"Sarakkeessa {nro_talo} virhe: enemmän kuin yksi {i}")
+                return False
+    
+    print("Kelpaa")
+    time.sleep(2)
+    return True
+
+def alusta_sudoku() -> list:
+    palautettava = []    
+    for i in range(9):
+        palautettava.append([])
+        for j in range(9):
+            palautettava[i].append(0)
+    return palautettava
+
+def alusta_mahdolliset() -> list:
+    mahdolliset = []
+    for i in range(9):
+        mahdolliset.append([])
+        for j in range(9):
+            mahdolliset[i].append([1, 2, 3, 4, 5, 6, 7, 8, 9])
+    return mahdolliset
 
 if __name__ == "__main__":
     
     # sudoku = ota_sudoku()
-    # if onko_kelvollinen(sudoku):
-    #     nimi = input("Anna sudokullesi nimi")
+    # if onko_kelvollinen_sudoku(sudoku):
+    #     nimi = input("Anna sudokullesi nimi: ")
     #     with open("sudokut.txt", "a") as tiedosto:
-    #         tiedosto.write(f"{nimi} = {sudoku}")
+    #         tiedosto.write(f"{nimi} = {sudoku}\n")
     #     time.sleep(2)
     #     ratkaise_sudoku(sudoku)
-
-    # sudoku_keskitaso = [
-    #     [6, 0, 9, 0, 4, 0, 0, 0, 1],
-    #     [7, 1, 0, 5, 0, 9, 6, 0, 0],
-    #     [0, 5, 0, 0, 0, 0, 0, 0, 0],
-    #     [2, 0, 7, 0, 8, 0, 0, 9, 0],
-    #     [0, 0, 0, 0, 6, 0, 0, 2, 4],
-    #     [0, 6, 0, 9, 0, 0, 0, 0, 8],
-    #     [0, 0, 8, 0, 0, 0, 3, 0, 0],
-    #     [0, 0, 0, 4, 0, 0, 0, 0, 7],
-    #     [0, 0, 0, 0, 5, 0, 0, 0, 0]]
-    # print("Lähtötilanne")
-    # tulosta_sudoku(sudoku_keskitaso)
-    # time.sleep(3)
-    # ratkaistu = ratkaise_sudoku(sudoku_keskitaso)
- 
-    # sudoku_vaikea = [
-    #     [8, 5, 0, 0, 0, 0, 0, 0, 0],
-    #     [0, 0, 0, 1, 3, 0, 0, 0, 0],
-    #     [4, 0, 0, 0, 0, 0, 0, 9, 5],
-    #     [0, 2, 0, 9, 0, 8, 0, 0, 0],
-    #     [5, 8, 1, 0, 0, 0, 0, 0, 0],
-    #     [0, 0, 0, 0, 0, 0, 7, 0, 6],
-    #     [0, 0, 7, 0, 0, 1, 8, 0, 0],
-    #     [0, 0, 0, 8, 0, 9, 0, 0, 0],
-    #     [0, 0, 0, 0, 0, 0, 2, 1, 3]]
-    # # ratkeaa
-    # print("Vaikea sudoku: ")
-    # tulosta_sudoku(sudoku_vaikea)
-    # time.sleep(1)
-    # vaikean_ratkaisu = ratkaise_sudoku(sudoku_vaikea)
 
     # sudoku_extreme = [
     #     [0, 0, 2, 0, 0, 6, 0, 0, 5],
@@ -630,49 +642,18 @@ if __name__ == "__main__":
     # print("Evil sudoku 19.10.")
     # ratkaise_sudoku(evil_1910)
     
-    # naked_pair_rivi_5 = [
-    #         [1, 6, 7, 0, 0, 8, 0, 0, 0],
-    #         [0, 0, 0, 2, 0, 0, 0, 0, 0],
-    #         [0, 8, 0, 0, 0, 0, 0, 0, 0],
-
-    #         [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    #         [0, 5, 0, 0, 0, 0, 8, 2, 3],
-    #         [0, 3, 4, 0, 8, 0, 0, 0, 9],
-
-    #         [0, 0, 0, 8, 6, 0, 9, 0, 0],
-    #         [5, 0, 0, 0, 9, 1, 0, 0, 4],
-    #         [7, 0, 0, 0, 0, 5, 3, 0, 0]
-    #     ]
-    # print(naked_pair_rivi_5)
-    # if onko_kelvollinen(naked_pair_rivi_5):
-    #     ratkaise_sudoku(naked_pair_rivi_5)
-    # # Ratkesi kun naked pairit oli implementoitu
-
-    # sudoku_forkids = [
-    #     [8, 0, 6, 0, 0, 0, 0, 0, 0], 
-    #     [0, 0, 0, 6, 0, 0, 0, 0, 0], 
-    #     [0, 0, 0, 9, 0, 3, 2, 0, 0], 
-    #     [9, 3, 0, 2, 0, 0, 0, 1, 0], 
-    #     [0, 0, 0, 0, 0, 0, 0, 2, 6], 
-    #     [0, 0, 0, 3, 4, 0, 5, 0, 0], 
-    #     [1, 0, 0, 0, 8, 0, 0, 0, 0], 
-    #     [3, 0, 0, 0, 0, 7, 0, 0, 4], 
-    #     [0, 0, 4, 0, 0, 0, 0, 0, 0]
-    #     ]
-    # # ratkeaa
-
-    sudoku_x_wing = [
-        [0, 0, 3, 8, 0, 0, 5, 1, 0], 
-        [0, 0, 8, 7, 0, 0, 9, 3, 0], 
-        [1, 0, 0, 3, 0, 5, 7, 2, 8], 
-        [0, 0, 0, 2, 0, 0, 8, 4, 9], 
-        [8, 0, 1, 9, 0, 6, 2, 5, 7], 
-        [0, 0, 0, 5, 0, 0, 1, 6, 3], 
-        [9, 6, 4, 1, 2, 7, 3, 8, 5], 
-        [3, 8, 2, 6, 5, 9, 4, 7, 1], 
-        [0, 1, 0, 4, 0, 0, 6, 9, 2]]
-    ratkaise_sudoku(sudoku_x_wing)
-    # ei ratkea vielä
+    # sudoku_x_wing = [
+    #     [0, 0, 3, 8, 0, 0, 5, 1, 0], 
+    #     [0, 0, 8, 7, 0, 0, 9, 3, 0], 
+    #     [1, 0, 0, 3, 0, 5, 7, 2, 8], 
+    #     [0, 0, 0, 2, 0, 0, 8, 4, 9], 
+    #     [8, 0, 1, 9, 0, 6, 2, 5, 7], 
+    #     [0, 0, 0, 5, 0, 0, 1, 6, 3], 
+    #     [9, 6, 4, 1, 2, 7, 3, 8, 5], 
+    #     [3, 8, 2, 6, 5, 9, 4, 7, 1], 
+    #     [0, 1, 0, 4, 0, 0, 6, 9, 2]]
+    # ratkaise_sudoku(sudoku_x_wing)
+    # # ei ratkea vielä
 
     # sudoku_tyhja = [
     #         [0, 0, 0, 0, 0, 0, 0, 0, 0],

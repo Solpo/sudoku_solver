@@ -23,11 +23,11 @@ def ratkaise_sudoku(sisaan_sudoku: list) -> list:
         
         
         if edistysta == 0:
-            edistysta += x_wing(sudoku, mahdolliset)
             edistysta += alaston_pari_talossa(sudoku, mahdolliset)
             edistysta += lukitut_kandidaatit_1(sudoku, mahdolliset)
             edistysta += lukitut_kandidaatit_2(sudoku, mahdolliset)
             edistysta += alaston_tripla(sudoku, mahdolliset)
+            edistysta += x_wing(sudoku, mahdolliset)
             if edistysta == 0:
                 print("Taitaa olla jumissa")
                 time.sleep(0.5)
@@ -36,6 +36,10 @@ def ratkaise_sudoku(sisaan_sudoku: list) -> list:
         if onko_ratkaistu(sudoku):
             print("\n\n\n\n\n\nSudoku ratkaistu!\n")
             tulosta_sudoku(sudoku)
+            if onko_kelvollinen_sudoku(sudoku):
+                print("oikeinkin vielä")
+            else:
+                print("nyt vaan meni jotenkin väärin")
             time.sleep(5)
             return sudoku
 
@@ -228,7 +232,8 @@ def syvatarkasta_sarakkeesta(sudoku:list, mahdolliset: list) -> int:
                         tulosta_sudoku(sudoku)
                         return 1
     return 0
-        
+
+# allaolevan voinee laajentaa koskemaan lukittuja pareja
 def alaston_pari_talossa(sudoku: list, mahdolliset: list) -> int:
     eteni = 0
     for talon_nro in range(0,9):
@@ -495,7 +500,8 @@ def lisaa_sudokuun(sudoku: list, rivi: int, sarake: int, numero: int, mahdollise
     poista_mahdollisista_blokissa(numero, ruudun_blokki(rivi, sarake), mahdolliset)
     mahdolliset[rivi][sarake] = []
     if not nopeasti:
-        time.sleep(0.7)
+        # time.sleep(0.45)
+        pass
 
 def ota_sudoku():
     palautettava = []
@@ -612,13 +618,12 @@ def alusta_mahdolliset() -> list:
     return mahdolliset
 
 if __name__ == "__main__":
-    # sudoku = ota_sudoku()
-    # if onko_kelvollinen_sudoku(sudoku):
-    #     nimi = input("Anna sudokullesi nimi: ")
-    #     with open("sudokut.txt", "a") as tiedosto:
-    #         tiedosto.write(f"{nimi} = {sudoku}\n")
-    #     time.sleep(2)
-    #     ratkaise_sudoku(sudoku)
+    sudoku = ota_sudoku()
+    nimi = input("Anna sudokullesi nimi: ")
+    with open("sudokut.txt", "a") as tiedosto:
+        tiedosto.write(f"{nimi} = {sudoku}\n")
+    time.sleep(2)
+    ratkaise_sudoku(sudoku)
 
     # extreme_20_10_2020 = [[8, 0, 0, 0, 9, 0, 0, 0, 2], [0, 0, 0, 2, 0, 3, 0, 0, 0], [0, 0, 6, 0, 7, 0, 9, 0, 0], [0, 2, 0, 0, 0, 0, 0, 3, 0], [7, 0, 1, 0, 3, 0, 6, 0, 8], [0, 6, 0, 0, 0, 0, 0, 4, 0], [0, 0, 5, 0, 1, 0, 7, 0, 0], [0, 0, 0, 5, 0, 4, 0, 0, 0], [4, 0, 0, 0, 8, 0, 0, 0, 6]]
     # print(extreme_20_10_2020)
@@ -626,10 +631,10 @@ if __name__ == "__main__":
     # ratkaise_sudoku(extreme_20_10_2020)
     # ei ratkea
 
-    egregious_20_10_2020 = [[5, 0, 7, 0, 0, 0, 3, 0, 4], [0, 0, 0, 0, 7, 0, 0, 0, 0], [3, 0, 0, 1, 0, 6, 0, 0, 7], [0, 0, 4, 0, 0, 0, 8, 0, 0], [0, 3, 0, 0, 9, 0, 0, 5, 0], [0, 0, 8, 0, 0, 0, 1, 0, 0], [6, 0, 0, 7, 0, 3, 0, 0, 9], [0, 0, 0, 0, 6, 0, 0, 0, 0], [9, 0, 2, 0, 0, 0, 6, 0, 8]]
-    print("egregious 20.10.")
-    time.sleep(2)
-    ratkaise_sudoku(egregious_20_10_2020)
+    # egregious_20_10_2020 = [[5, 0, 7, 0, 0, 0, 3, 0, 4], [0, 0, 0, 0, 7, 0, 0, 0, 0], [3, 0, 0, 1, 0, 6, 0, 0, 7], [0, 0, 4, 0, 0, 0, 8, 0, 0], [0, 3, 0, 0, 9, 0, 0, 5, 0], [0, 0, 8, 0, 0, 0, 1, 0, 0], [6, 0, 0, 7, 0, 3, 0, 0, 9], [0, 0, 0, 0, 6, 0, 0, 0, 0], [9, 0, 2, 0, 0, 0, 6, 0, 8]]
+    # print("egregious 20.10.")
+    # time.sleep(2)
+    # ratkaise_sudoku(egregious_20_10_2020)
     # naked_triple = [[0, 0, 0, 2, 9, 4, 3, 8, 0], [0, 0, 0, 1, 7, 8, 6, 4, 0], [4, 8, 0, 3, 5, 6, 1, 0, 0], [0, 0, 4, 8, 3, 7, 5, 0, 1], [0, 0, 0, 4, 1, 5, 7, 0, 0], [5, 0, 0, 6, 2, 9, 8, 3, 4], [9, 5, 3, 7, 8, 2, 4, 1, 6], [1, 2, 6, 5, 4, 3, 9, 7, 8], [0, 4, 0, 9, 6, 1, 2, 5, 3]]
     # print("naked triple")
     # time.sleep(1)

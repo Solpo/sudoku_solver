@@ -84,7 +84,7 @@ def ota_sudoku():
         while len(palautettava) < 9:
             palautettava.append(ota_rivi(rivinro))
             rivinro = len(palautettava)
-        print("Sudokusi alla. Jos olet tyytyväinen, paina Enter, muuten anna korjattavan rivin numero (0 - 8)")
+        print("Sudokusi alla. Jos olet tyytyväinen, paina Enter, muuten anna korjattavan rivin numero (1 - 9)")
         print("Käskyllä i# sijoitetaan riville # uusi rivi ja siirretään muita 1 alaspäin")
         tulosta_sudoku(palautettava)
         print()
@@ -97,7 +97,7 @@ def ota_sudoku():
                 return palautettava
             
             elif komento[0].lower() == "i":
-                rivinro = int(komento[1])
+                rivinro = int(komento[1]) - 1
                 if rivinro > 8 or rivinro < 0:
                     raise ValueError
                 elif rivinro == 8:
@@ -108,7 +108,7 @@ def ota_sudoku():
                     palautettava[rivinro] = ota_rivi(rivinro)
 
             else:
-                rivinro = int(komento)
+                rivinro = int(komento) - 1
                 if rivinro < 0 or rivinro > 8:
                     print()
                     print("Rivinumeron oltava väliltä 0 - 8")
@@ -121,7 +121,7 @@ def ota_sudoku():
 def ota_rivi(rivinro: int) -> list:
     while True:
         try:
-            syote = input(f"Syötä rivi #{rivinro} numeroita, erottimena välilyönti.\n{'# ' * 3}{'* ' * 3}# # #\n")
+            syote = input(f"Syötä rivi #{rivinro + 1} numeroita, erottimena välilyönti.\n{'# ' * 3}{'* ' * 3}# # #\n")
             if len(syote) > 17:
                 syote = syote[:17]
             if len(syote) < 17:
@@ -141,9 +141,9 @@ def ota_rivi(rivinro: int) -> list:
                     raise ValueError
                 if i < 0 or i > 9:
                     raise ValueError
-            print("Siivottu rivi:")
+            print("\nSiivottu rivi:")
             for i in rivi:
-                print(i, end=" ")
+                print(str(i).replace("0", "_"), end=" ")
             print("\n\n")
 
             return rivi

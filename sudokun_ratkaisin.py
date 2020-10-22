@@ -25,9 +25,9 @@ def ratkaise_sudoku(sisaan_sudoku: list) -> list:
             edistysta += x_wing(sudoku, mahdolliset)
             edistysta += miekkakala(sudoku, mahdolliset)
             
-            if edistysta == 0:
-                print("Taitaa olla jumissa")
-                time.sleep(2.5)
+        if edistysta == 0:
+            print("Taitaa olla jumissa")
+            time.sleep(2.5)
         edistysta = 0
         
         if onko_ratkaistu(sudoku):
@@ -311,6 +311,7 @@ def poista_mahdollisista_ruuduissa(numero: int, siivottavat_ruudut: list, mahdol
 # ratkaisufunktiot
 
 def tarkasta_vaajaamattomat(sudoku:list, mahdolliset: list) -> int:
+    eteni = 0
     for y in range(9):
         for x in range(9):
             if len(mahdolliset[y][x]) == 1:
@@ -318,11 +319,13 @@ def tarkasta_vaajaamattomat(sudoku:list, mahdolliset: list) -> int:
                 # print("lisätään siis luku sudokuun")
                 lisaa_sudokuun(sudoku, y, x, mahdolliset[y][x][0], mahdolliset)
                 print("\n\n")
+                eteni += 1
                 tulosta_sudoku(sudoku)
-                return 1
-    return 0
+                
+    return eteni
 
 def syvatarkasta_blokeista(sudoku:list, mahdolliset: list) -> int:
+    eteni = 0
     for blokki in range(9):
         talon_mahdolliset = []
         for y, x in blokin_ruudut(blokki):
@@ -339,10 +342,11 @@ def syvatarkasta_blokeista(sudoku:list, mahdolliset: list) -> int:
                         lisaa_sudokuun(sudoku, y, x, nro, mahdolliset)
                         print("\n\n")
                         tulosta_sudoku(sudoku)
-                        return 1
-    return 0
+                        eteni += 1
+    return eteni
 
 def syvatarkasta_rivilta(sudoku:list, mahdolliset: list) -> int:
+    eteni = 0
     for rivi in range(9):
         talon_mahdolliset = []
         for y, x in rivin_ruudut(rivi):
@@ -359,10 +363,11 @@ def syvatarkasta_rivilta(sudoku:list, mahdolliset: list) -> int:
                         lisaa_sudokuun(sudoku, y, x, nro, mahdolliset)
                         print("\n\n")
                         tulosta_sudoku(sudoku)
-                        return 1
-    return 0
+                        eteni += 1
+    return eteni
 
 def syvatarkasta_sarakkeesta(sudoku:list, mahdolliset: list) -> int:
+    eteni = 0
     for sarake in range(9):
         talon_mahdolliset = []
         for y, x in sarakkeen_ruudut(sarake):
@@ -379,8 +384,8 @@ def syvatarkasta_sarakkeesta(sudoku:list, mahdolliset: list) -> int:
                         lisaa_sudokuun(sudoku, y, x, nro, mahdolliset)
                         print("\n\n")
                         tulosta_sudoku(sudoku)
-                        return 1
-    return 0
+                        eteni += 1
+    return eteni
 
 # allaolevan voinee laajentaa koskemaan lukittuja pareja
 def alaston_pari_talossa(sudoku: list, mahdolliset: list) -> int:
@@ -567,6 +572,7 @@ def lukitut_kandidaatit_2(sudoku: list, mahdolliset: list) -> int:
                     for y, x in blokin_ruudut(siivottava_blokki):
                         if (y, x) not in mahdollisen_paikat_rivilla and nro in mahdolliset[y][x]:
                             mahdolliset[y][x].remove(nro)
+                            eteni += 1
                             # print(f"Poistettu {nro} mahdollisista ruudussa {y},{x} (lukitut kandidaatit 2)")
                             
         for sarake in range(0,9):
@@ -584,7 +590,8 @@ def lukitut_kandidaatit_2(sudoku: list, mahdolliset: list) -> int:
                     for y, x in blokin_ruudut(siivottava_blokki):
                         if (y, x) not in mahdollisen_paikat_sarakkeessa and nro in mahdolliset[y][x]:
                             mahdolliset[y][x].remove(nro)
-                            print(f"Poistettu {nro} mahdollisista ruudussa {y},{x} (lukitut kandidaatit 2)")
+                            eteni += 1
+                            # print(f"Poistettu {nro} mahdollisista ruudussa {y},{x} (lukitut kandidaatit 2)")
                           
     return eteni
 
@@ -703,10 +710,6 @@ if __name__ == "__main__":
     with open("sudokut.txt", "a") as kokoelma:
         kokoelma.write("Ratkesi\n")
     
-    
-    
-
-
     
     # sudoku_tyhja = [
     #         [0, 0, 0, 0, 0, 0, 0, 0, 0],

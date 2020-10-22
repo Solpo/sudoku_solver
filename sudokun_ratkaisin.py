@@ -427,7 +427,7 @@ def lukitut_kandidaatit_1(sudoku: list, mahdolliset: list) -> int:
 
 def lukitut_kandidaatit_2(sudoku: list, mahdolliset: list) -> int:
     eteni = 0
-    for nro in range(7, 8):
+    for nro in range(1, 10):
         for rivi in range(0,9):
             mahdollisen_paikat_rivilla = []
             for ruutu in rivin_ruudut(rivi):

@@ -1,4 +1,4 @@
-
+# seuraavaksi hidden pair
 import time, itertools
 
 def ratkaise_sudoku(sisaan_sudoku: list) -> list:
@@ -18,10 +18,12 @@ def ratkaise_sudoku(sisaan_sudoku: list) -> list:
         
         
         if edistysta == 0:
-            edistysta += alaston_pari_talossa(sudoku, mahdolliset)
+            edistysta += alaston_pari(sudoku, mahdolliset)
+            # edistysta += piiloutunut_pari(sudoku, mahdolliset) # rikki
             edistysta += lukitut_kandidaatit_1(sudoku, mahdolliset)
             edistysta += lukitut_kandidaatit_2(sudoku, mahdolliset)
             edistysta += alaston_tripla(sudoku, mahdolliset)
+            edistysta += alaston_nelikko(sudoku, mahdolliset)
             edistysta += x_wing(sudoku, mahdolliset)
             edistysta += miekkakala(sudoku, mahdolliset)
             
@@ -388,130 +390,115 @@ def syvatarkasta_sarakkeesta(sudoku:list, mahdolliset: list) -> int:
     return eteni
 
 # allaolevan voinee laajentaa koskemaan lukittuja pareja
-def alaston_pari_talossa(sudoku: list, mahdolliset: list) -> int:
+def alaston_pari(sudoku: list, mahdolliset: list) -> int:
     eteni = 0
-    for talon_nro in range(0,9):
-        blokin_mahdolliset = [mahdolliset[y][x] for y, x in blokin_ruudut(talon_nro)]
-        osumat_blokissa = ()
-        for ruudun_mahdolliset in blokin_mahdolliset:
-            if blokin_mahdolliset.count(ruudun_mahdolliset) == 2 and len(ruudun_mahdolliset) == 2:
-                if len(osumat_blokissa) == 0:
-                    osumat_blokissa = (ruudun_mahdolliset)
-                    for y, x in blokin_ruudut(talon_nro):
-                        if mahdolliset[y][x] != list(osumat_blokissa):
-                            if osumat_blokissa[0] in mahdolliset[y][x]:
-                                mahdolliset[y][x].remove(osumat_blokissa[0])
-                                # print(f"Mahdollisista poistettu blokin alastoman parein perusteella")
-                                eteni += 1
-                            if osumat_blokissa[1] in mahdolliset[y][x]:
-                                mahdolliset[y][x].remove(osumat_blokissa[1])
-                                # print("Mahdollisista poistettu blokin alastoman parein perusteella")
-                                eteni += 1
+    for tyyppi in ("r", "s", "b"):
+        for talon_nro in range(9):
+            for nro_1, nro_2 in itertools.combinations(range(1, 10), 2):
+                parien_ruudut = []
+                kasiteltavat_talon_ruudut = talon_ruudut(talon_nro, tyyppi)
+                for y, x in kasiteltavat_talon_ruudut:
+                    if len(mahdolliset[y][x]) == 2:
+                        if nro_1 in mahdolliset[y][x] and nro_2 in mahdolliset[y][x]:
+                            parien_ruudut.append((y, x))
+                if len(parien_ruudut) == 2:
+                    for ruutu in parien_ruudut:
+                        kasiteltavat_talon_ruudut.remove(ruutu)
+                    for y, x in kasiteltavat_talon_ruudut:
+                        if nro_1 in mahdolliset[y][x]:
+                            mahdolliset[y][x].remove(nro_1)
+                            # print(f"poistettu {nro_1} ruudusta {y}, {x} alastoman parin {parien_ruudut} vuoksi talossa {tyyppi}")
+                        if nro_2 in kasiteltavat_talon_ruudut:
+                            mahdolliset[y][x].remove(nro_2)
+                            # print(f"poistettu {nro_2} ruudusta {y}, {x} alastoman parin {parien_ruudut} vuoksi talossa {tyyppi}")
+    return eteni
 
-                elif len(osumat_blokissa) > 0 and ruudun_mahdolliset != osumat_blokissa:
-                    # print(f"Omg toka alaston pari {ruudun_mahdolliset} samasta blokista {talon_nro}")
-                    for y, x in blokin_ruudut(talon_nro):
-                        if mahdolliset[y][x] != list(osumat_blokissa):
-                            if osumat_blokissa[0] in mahdolliset[y][x]:
-                                mahdolliset[y][x].remove(osumat_blokissa[0])
-                                # print("Mahdollisista poistettu blokin tokan alastoman parin perusteella")
-                                eteni += 1
-                            if osumat_blokissa[1] in mahdolliset[y][x]:
-                                mahdolliset[y][x].remove(osumat_blokissa[1])
-                                # print("Mahdollisista poistettu blokin tokan alastoman parin perusteella")
-                                eteni += 1
-
-        rivin_mahdolliset = [mahdolliset[y][x] for y, x in rivin_ruudut(talon_nro)]
-        osumat_rivilla = ()
-        for ruudun_mahdolliset in rivin_mahdolliset:
-            if rivin_mahdolliset.count(ruudun_mahdolliset) == 2 and len(ruudun_mahdolliset) == 2:
-                # print(f"omg alaston pari {ruudun_mahdolliset} rivillä {talon_nro}")
-                if len(osumat_rivilla) == 0:
-                    osumat_rivilla = (ruudun_mahdolliset)
-                    for y, x in rivin_ruudut(talon_nro):
-                        if mahdolliset[y][x] != list(osumat_rivilla):
-                            if osumat_rivilla[0] in mahdolliset[y][x]:
-                                mahdolliset[y][x].remove(osumat_rivilla[0])
-                                # print("Mahdollisista poistettu rivin alastoman parin perusteella")
-                                eteni += 1
-                            if osumat_rivilla[1] in mahdolliset[y][x]:
-                                mahdolliset[y][x].remove(osumat_rivilla[1])
-                                # print("Mahdollisista poistettu rivin alastoman parin perusteella")
-                                eteni += 1
-
-                elif len(osumat_rivilla) > 0 and ruudun_mahdolliset != osumat_rivilla:
-                    # print(f"Omg toka alaston pari {ruudun_mahdolliset} samalta riviltä {talon_nro}")
-                    for y, x in rivin_ruudut(talon_nro):
-                        if mahdolliset[y][x] != list(osumat_rivilla):
-                            if osumat_rivilla[0] in mahdolliset[y][x]:
-                                mahdolliset[y][x].remove(osumat_rivilla[0])
-                                # print("Mahdollisista poistettu rivin tokan alastoman parin perusteella")
-                                eteni += 1
-                            if osumat_rivilla[1] in mahdolliset[y][x]:
-                                mahdolliset[y][x].remove(osumat_rivilla[1])
-                                # print("Mahdollisista poistettu rivin tokan alastoman parin perusteella")
-                                eteni += 1
-
-        sarakkeen_mahdolliset = [mahdolliset[y][x] for y, x in sarakkeen_ruudut(talon_nro)]
-        osumat_sarakkeessa = ()
-        for ruudun_mahdolliset in sarakkeen_mahdolliset:
-            if sarakkeen_mahdolliset.count(ruudun_mahdolliset) == 2 and len(ruudun_mahdolliset) == 2:
-                # print(f"omg alaston pari {ruudun_mahdolliset} sarakkeessa {talon_nro}")
-                if len(osumat_sarakkeessa) == 0:
-                    osumat_sarakkeessa = (ruudun_mahdolliset)
-                    for y, x in sarakkeen_ruudut(talon_nro):
-                        if mahdolliset[y][x] != list(osumat_sarakkeessa):
-                            if osumat_sarakkeessa[0] in mahdolliset[y][x]:
-                                mahdolliset[y][x].remove(osumat_sarakkeessa[0])
-                                # print("Mahdollisista poistettu sarakkeen alastoman parin perusteella")
-                                eteni += 1
-                            if osumat_sarakkeessa[1] in mahdolliset[y][x]:
-                                mahdolliset[y][x].remove(osumat_sarakkeessa[1])
-                                # print("Mahdollisista poistettu sarakkeen alastoman parin perusteella")
-                                eteni += 1
-                elif len(osumat_sarakkeessa) > 0 and ruudun_mahdolliset != osumat_sarakkeessa:
-                    # print(f"Omg toka alaston pari {ruudun_mahdolliset} samassa sarakkeessa {talon_nro}")
-                    for y, x in sarakkeen_ruudut(talon_nro):
-                        if mahdolliset[y][x] != list(osumat_sarakkeessa):
-                            if osumat_sarakkeessa[0] in mahdolliset[y][x]:
-                                mahdolliset[y][x].remove(osumat_sarakkeessa[0])
-                                # print("Mahdollisista poistettu sarakkeen tokan alastoman parin perusteella")
-                                eteni += 1
-                            if osumat_sarakkeessa[1] in mahdolliset[y][x]:
-                                mahdolliset[y][x].remove(osumat_sarakkeessa[1])
-                                # print("Mahdollisista poistettu sarakkeen tokan alastoman parin perusteella")
-                                eteni += 1
+def piiloutunut_pari(sudoku: list, mahdolliset: list) -> int: # rikki
+    eteni = 0
+    for tyyppi in ("r", "s", "b"):
+        for talon_nro in range(9):
+            for nro_1, nro_2 in itertools.combinations(range(1, 10), 2):
+                pareja_talossa = 0
+                parien_ruudut = []
+                for y, x in talon_ruudut(talon_nro, tyyppi):
+                    if nro_1 in mahdolliset[y][x] and nro_2 in mahdolliset[y][x]:
+                        pareja_talossa += 1
+                        parien_ruudut.append((y, x))
+                if pareja_talossa == 2:
+                    siivottavat_ruudut = talon_ruudut(talon_nro, tyyppi)
+                    for ruutu in parien_ruudut:
+                        siivottavat_ruudut.remove(ruutu)
+                    for y, x in siivottavat_ruudut:
+                        if nro_1 in mahdolliset[y][x]:
+                            mahdolliset[y][x].remove(nro_1)
+                            # print(f"poistettiin ruudusta {y},{x} mahdollinen {nro_1}, poistoperuste {tyyppi}")
+                            eteni += 1
+                        if nro_2 in mahdolliset[y][x]:
+                            mahdolliset[y][x].remove(nro_2)
+                            # print(f"poistettiin ruudusta {y},{x} mahdollinen {nro_2}, poistoperuste {tyyppi}")
+                            eteni +=1
     return eteni
 
 def alaston_tripla(sudoku: list, mahdolliset: list) -> int:
     eteni = 0
-    numerot = [i for i in range(1, 10)]
     for tyyppi in ["r", "s", "b"]:
         for talo in range(0, 9):
-            for nro_1 in range(1, 8):
-                for nro_2 in range(nro_1 + 1, 9):
-                    for nro_3 in range(nro_2 + 1, 10):
-                        kielletyt = numerot[:]
-                        for i in [nro_1, nro_2, nro_3]:
-                            kielletyt.remove(i)
-                        ruudut = talon_ruudut(talo, tyyppi)
-                        hupenevat_ruudut = ruudut[:]
-                        for y, x in ruudut:
-                            for kielletty in kielletyt:
-                                if (y, x) not in hupenevat_ruudut:
-                                    break
-                                if kielletty in mahdolliset[y][x] or len(mahdolliset[y][x]) == 0:
-                                    hupenevat_ruudut.remove((y, x))
-                        if len(hupenevat_ruudut) == 3:
-                            # print(f"{tyyppi} {talo}: ruudut {hupenevat_ruudut} pitävät kaikki sisällään vain numeroita {nro_1}, {nro_2} tai {nro_3}.")
-                            for ruutu in talon_ruudut(talo, tyyppi):
-                                for numero in [nro_1, nro_2, nro_3]:
-                                    if (numero) in mahdolliset[ruutu[0]][ruutu[1]] and ruutu not in hupenevat_ruudut:
-                                        mahdolliset[ruutu[0]][ruutu[1]].remove(numero)
-                                        # print(f"Ja saatiin jopa poistettua mahdollisista {numero} ruudusta {ruutu}\n")
-                                        eteni += 1
+            for kolme_numeroa in itertools.combinations(range(1, 10), 3):
+                kielletyt_numerot = [i for i in range(1, 10)]
+                for numero in kolme_numeroa:
+                    kielletyt_numerot.remove(numero)
+                ruudut = talon_ruudut(talo, tyyppi)
+                ruudut_joissa_tripla = ruudut[:]
+                for y, x in ruudut:
+                    for kielletty in kielletyt_numerot:
+                        if (y, x) not in ruudut_joissa_tripla:
+                            break
+                        if kielletty in mahdolliset[y][x] or len(mahdolliset[y][x]) == 0:
+                            ruudut_joissa_tripla.remove((y, x))
+                if len(ruudut_joissa_tripla) == 3:
+                    # print(f"{tyyppi} {talo}: ruudut {ruudut_joissa_tripla} pitävät kaikki sisällään vain numeroita {numero for numero in kolme_numeroa}.")
+                    kasiteltavat_talon_ruudut = talon_ruudut(talo, tyyppi)
+                    for ruutu in ruudut_joissa_tripla:
+                        kasiteltavat_talon_ruudut.remove(ruutu)
+                    for y, x in kasiteltavat_talon_ruudut:
+                        for poistettava_numero in kolme_numeroa:
+                            if poistettava_numero in mahdolliset[y][x]:
+                                mahdolliset[y][x].remove(poistettava_numero)
+                                eteni += 1
+                                # print(f"Poistettu {poistettava_numero} ruudusta {y}, {x} alastoman triplan vuoksi tyypissä {tyyppi}")
+                    
     return eteni
                         
+def alaston_nelikko(sudoku: list, mahdolliset: list) -> int:
+    eteni = 0
+    for tyyppi in ["r", "s", "b"]:
+        for talo in range(0, 9):
+            for nelja_numeroa in itertools.combinations(range(1, 10), 4):
+                kielletyt_numerot = [i for i in range(1, 10)]
+                for numero in nelja_numeroa:
+                    kielletyt_numerot.remove(numero)
+                ruudut = talon_ruudut(talo, tyyppi)
+                ruudut_joissa_nelikko = ruudut[:]
+                for y, x in ruudut:
+                    for kielletty in kielletyt_numerot:
+                        if (y, x) not in ruudut_joissa_nelikko:
+                            break
+                        if kielletty in mahdolliset[y][x] or len(mahdolliset[y][x]) == 0:
+                            ruudut_joissa_nelikko.remove((y, x))
+                if len(ruudut_joissa_nelikko) == 4:
+                    # print(f"{tyyppi} {talo}: ruudut {ruudut_joissa_nelikko} pitävät kaikki sisällään vain numeroita {numero for numero in nelja_numeroa}.")
+                    kasiteltavat_talon_ruudut = talon_ruudut(talo, tyyppi)
+                    for ruutu in ruudut_joissa_nelikko:
+                        kasiteltavat_talon_ruudut.remove(ruutu)
+                    for y, x in kasiteltavat_talon_ruudut:
+                        for poistettava_numero in nelja_numeroa:
+                            if poistettava_numero in mahdolliset[y][x]:
+                                mahdolliset[y][x].remove(poistettava_numero)
+                                eteni += 1
+                                # print(f"Poistettu {poistettava_numero} ruudusta {y}, {x} alastoman nelikon vuoksi tyypissä {tyyppi}")
+                    
+    return eteni
+
 def lukitut_kandidaatit_1(sudoku: list, mahdolliset: list) -> int:
     eteni = 0
     for blokki in range(0,9):
@@ -706,7 +693,9 @@ if __name__ == "__main__":
     with open("sudokut.txt", "a") as kokoelma:
         kokoelma.write(f"\n{nimi} = {sudoku}\n")
     time.sleep(2)
+    tulosta_sudoku(sudoku)
     ratkaise_sudoku(sudoku)
+
     with open("sudokut.txt", "a") as kokoelma:
         kokoelma.write("Ratkesi\n")
     

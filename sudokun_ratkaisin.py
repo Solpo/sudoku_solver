@@ -463,6 +463,7 @@ def piiloutunut_tripla(sudoku: list, mahdolliset: list) -> int: # kesken
                             continue
                         else:
                             print(f"Numeroa {numero} ei löytynyt yhdestäkään ruudusta talossa")
+                            break
                 if len(ruudut_joissa_triplaa) != 3:
                     continue
                 loput_numerot = muut_numerot(kolme_numeroa[0], kolme_numeroa[1], kolme_numeroa[2])
@@ -470,7 +471,9 @@ def piiloutunut_tripla(sudoku: list, mahdolliset: list) -> int: # kesken
                     for poistettava in loput_numerot:
                         if poistettava in mahdolliset[y][x]:
                             mahdolliset[y][x].remove(poistettava)
-                            print(f"Poistettu piiloutuneella triplalla ylimääräistä ruudusta {y} ,{x}, tyypillä {tyyppi}.")
+                            print(f"Poistettu piiloutuneella triplalla {poistettava} ruudusta {y}, {x} , tyypillä {tyyppi}.")
+                            print(f"Tripla oli {kolme_numeroa}")
+                            time.sleep(1)
                             eteni += 1
     return eteni
 
@@ -481,7 +484,7 @@ def alaston_tripla(sudoku: list, mahdolliset: list) -> int:
             for kolme_numeroa in itertools.combinations(range(1, 10), 3):
                 ruudut_joissa_triplaa = []
                 for numero in kolme_numeroa:
-                    numeron_ruudut = etsi_mahdollisista_ruuduissa(numero, talon_ruudut(talo, tyyppi))
+                    numeron_ruudut = etsi_mahdollisista_ruuduissa(numero, talon_ruudut(talo, tyyppi), mahdolliset)
                     for ruutu in numeron_ruudut:
                         if ruutu not in ruudut_joissa_triplaa:
                             ruudut_joissa_triplaa.append(ruutu)
@@ -490,7 +493,7 @@ def alaston_tripla(sudoku: list, mahdolliset: list) -> int:
                     kielletyt_numerot = muut_numerot(nro_1, nro_2, nro_3)
 
                 
-                for y, x in ruudut:
+                for y, x in talon_ruudut(talo, tyyppi):
                     for kielletty in kielletyt_numerot:
                         if (y, x) not in ruudut_joissa_triplaa:
                             break
@@ -735,8 +738,7 @@ if __name__ == "__main__":
     #     kokoelma.write(f"\n{nimi} = {sudoku}\n")
     # time.sleep(2)
 
-    # piilotettu_pari
-    sudoku = [[0, 0, 0, 0, 6, 0, 0, 0, 0], [0, 0, 0, 0, 4, 2, 7, 3, 6], [0, 0, 6, 7, 3, 0, 0, 4, 0], [0, 9, 4, 0, 0, 0, 0, 6, 8], [0, 0, 0, 0, 9, 6, 4, 0, 7], [6, 0, 7, 0, 5, 0, 9, 2, 3], [1, 0, 0, 0, 0, 0, 0, 8, 5], [0, 6, 0, 0, 8, 0, 2, 7, 1], [0, 0, 5, 0, 1, 0, 0, 9, 4]]
+    sudoku = [[2, 8, 0, 0, 0, 0, 4, 7, 3], [5, 3, 4, 8, 2, 7, 1, 9, 6], [0, 7, 1, 0, 3, 4, 0, 8, 0], [3, 0, 0, 5, 0, 0, 0, 4, 0], [0, 0, 0, 3, 4, 0, 0, 6, 0], [4, 6, 0, 7, 9, 0, 3, 1, 0], [0, 9, 0, 2, 0, 3, 6, 5, 4], [0, 0, 3, 0, 0, 9, 8, 2, 1], [0, 0, 0, 0, 8, 0, 9, 3, 7]]
     tulosta_sudoku(sudoku)
     ratkaise_sudoku(sudoku)
 

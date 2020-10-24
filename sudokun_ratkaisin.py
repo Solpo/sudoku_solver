@@ -454,17 +454,18 @@ def piiloutunut_tripla(sudoku: list, mahdolliset: list) -> int: # kesken
     for tyyppi in ("r", "s", "b"):
         for talon_nro in range(9):
             for kolme_numeroa in itertools.combinations(range(1, 10), 3):
-                loput_numerot = muut_numerot(kolme_numeroa[0], kolme_numeroa[1], kolme_numeroa[2])
                 ruudut_joissa_triplaa = []
+                numeroita_triplasta_mahdollisia = 0
                 for numero in kolme_numeroa:
+                    if len(etsi_mahdollisista_ruuduissa(numero, talon_ruudut(talon_nro, tyyppi), mahdolliset)) == 0:
+                        # print(f"Triplan numeroa {numero} ei ollut yhdenkään ruudun mahdollisissa joukossa {tyyppi} {talon_nro}")
+                        break
+                    else:
+                        numeroita_triplasta_mahdollisia += 1
                     for ruutu in etsi_mahdollisista_ruuduissa(numero, talon_ruudut(talon_nro, tyyppi), mahdolliset):
                         if ruutu not in ruudut_joissa_triplaa:
                             ruudut_joissa_triplaa.append(ruutu)
-                            continue
-                        else:
-                            print(f"Numeroa {numero} ei löytynyt yhdestäkään ruudusta talossa")
-                            break
-                if len(ruudut_joissa_triplaa) != 3:
+                if numeroita_triplasta_mahdollisia != 3 or len(ruudut_joissa_triplaa) != 3:
                     continue
                 loput_numerot = muut_numerot(kolme_numeroa[0], kolme_numeroa[1], kolme_numeroa[2])
                 for y, x in ruudut_joissa_triplaa:
@@ -732,13 +733,12 @@ def miekkakala(sudoku: list, mahdolliset: list) -> int:
 
 
 if __name__ == "__main__":
-    # sudoku = ota_sudoku()
-    # nimi = input("Anna sudokullesi nimi: ")
-    # with open("sudokut.txt", "a") as kokoelma:
-    #     kokoelma.write(f"\n{nimi} = {sudoku}\n")
-    # time.sleep(2)
+    sudoku = ota_sudoku()
+    nimi = input("Anna sudokullesi nimi: ")
+    with open("sudokut.txt", "a") as kokoelma:
+        kokoelma.write(f"\n{nimi} = {sudoku}\n")
+    time.sleep(2)
 
-    sudoku = [[2, 8, 0, 0, 0, 0, 4, 7, 3], [5, 3, 4, 8, 2, 7, 1, 9, 6], [0, 7, 1, 0, 3, 4, 0, 8, 0], [3, 0, 0, 5, 0, 0, 0, 4, 0], [0, 0, 0, 3, 4, 0, 0, 6, 0], [4, 6, 0, 7, 9, 0, 3, 1, 0], [0, 9, 0, 2, 0, 3, 6, 5, 4], [0, 0, 3, 0, 0, 9, 8, 2, 1], [0, 0, 0, 0, 8, 0, 9, 3, 7]]
     tulosta_sudoku(sudoku)
     ratkaise_sudoku(sudoku)
 

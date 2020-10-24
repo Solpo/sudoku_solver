@@ -501,8 +501,8 @@ def piiloutunut_nelikko(sudoku: list, mahdolliset: list) -> int: # testaamatta m
                     for poistettava in loput_numerot:
                         if poistettava in mahdolliset[y][x]:
                             mahdolliset[y][x].remove(poistettava)
-                            print(f"Poistettu piiloutuneella nelikolla {poistettava} ruudusta {y}, {x} , tyypillä {tyyppi}.")
-                            print(f"Nelikko oli {nelja_numeroa}")
+                            # print(f"Poistettu piiloutuneella nelikolla {poistettava} ruudusta {y}, {x} , tyypillä {tyyppi}.")
+                            # print(f"Nelikko oli {nelja_numeroa}")
                             eteni += 1
     return eteni
 

@@ -11,21 +11,23 @@ def ratkaise_sudoku(sisaan_sudoku: list) -> list:
                 
     while True:
         edistysta = 0
-        edistysta += tarkasta_vaajaamattomat(sudoku, mahdolliset)
-        edistysta += syvatarkasta_blokeista(sudoku, mahdolliset)
-        edistysta += syvatarkasta_rivilta(sudoku, mahdolliset)
-        edistysta += syvatarkasta_sarakkeesta(sudoku, mahdolliset)
+        # edistysta += tarkasta_vaajaamattomat(sudoku, mahdolliset)
+        # edistysta += syvatarkasta_blokeista(sudoku, mahdolliset)
+        # edistysta += syvatarkasta_rivilta(sudoku, mahdolliset)
+        # edistysta += syvatarkasta_sarakkeesta(sudoku, mahdolliset)
         
         
         if edistysta == 0:
-            edistysta += alaston_pari(sudoku, mahdolliset)
-            # edistysta += piiloutunut_pari(sudoku, mahdolliset) # rikki
-            edistysta += lukitut_kandidaatit_1(sudoku, mahdolliset)
-            edistysta += lukitut_kandidaatit_2(sudoku, mahdolliset)
-            edistysta += alaston_tripla(sudoku, mahdolliset)
-            edistysta += alaston_nelikko(sudoku, mahdolliset)
-            edistysta += x_wing(sudoku, mahdolliset)
-            edistysta += miekkakala(sudoku, mahdolliset)
+            # edistysta += alaston_pari(sudoku, mahdolliset)
+            # edistysta += alaston_tripla(sudoku, mahdolliset)
+            # edistysta += piiloutunut_pari(sudoku, mahdolliset)
+            edistysta += piiloutunut_tripla(sudoku, mahdolliset)
+            # edistysta += lukitut_kandidaatit_1(sudoku, mahdolliset)
+            # edistysta += lukitut_kandidaatit_2(sudoku, mahdolliset)
+            # edistysta += alaston_tripla(sudoku, mahdolliset)
+            # edistysta += alaston_nelikko(sudoku, mahdolliset)
+            # edistysta += x_wing(sudoku, mahdolliset)
+            # edistysta += miekkakala(sudoku, mahdolliset)
             
         if edistysta == 0:
             print("Taitaa olla jumissa")
@@ -274,6 +276,12 @@ def muiden_kaistojen_linjat(kaista: int) -> list:
         palautettavat_linjat += [kaista * 3, kaista * 3 + 1, kaista * 3 + 2]
     return palautettavat_linjat
 
+def muut_numerot(*numerot) -> list:
+    karsittavat_numerot = [i for i in range(1, 10)]
+    for numero in numerot:
+        karsittavat_numerot.remove(numero)
+    return karsittavat_numerot
+
 def etsi_mahdollisista_ruuduissa(nro: int, pengottavat_ruudut: list, mahdolliset: list) -> list:
     nro_mahdollinen_ruuduissa = []
     for y, x in pengottavat_ruudut:
@@ -413,30 +421,57 @@ def alaston_pari(sudoku: list, mahdolliset: list) -> int:
                             # print(f"poistettu {nro_2} ruudusta {y}, {x} alastoman parin {parien_ruudut} vuoksi talossa {tyyppi}")
     return eteni
 
-def piiloutunut_pari(sudoku: list, mahdolliset: list) -> int: # rikki
+def piiloutunut_pari(sudoku: list, mahdolliset: list) -> int:
     eteni = 0
     for tyyppi in ("r", "s", "b"):
         for talon_nro in range(9):
-            for nro_1, nro_2 in itertools.combinations(range(1, 10), 2):
-                pareja_talossa = 0
-                parien_ruudut = []
-                for y, x in talon_ruudut(talon_nro, tyyppi):
-                    if nro_1 in mahdolliset[y][x] and nro_2 in mahdolliset[y][x]:
-                        pareja_talossa += 1
-                        parien_ruudut.append((y, x))
-                if pareja_talossa == 2:
-                    siivottavat_ruudut = talon_ruudut(talon_nro, tyyppi)
-                    for ruutu in parien_ruudut:
-                        siivottavat_ruudut.remove(ruutu)
-                    for y, x in siivottavat_ruudut:
-                        if nro_1 in mahdolliset[y][x]:
-                            mahdolliset[y][x].remove(nro_1)
-                            # print(f"poistettiin ruudusta {y},{x} mahdollinen {nro_1}, poistoperuste {tyyppi}")
+            for kaksi_numeroa in itertools.combinations(range(1, 10), 2):
+                ruudut = talon_ruudut(talon_nro, tyyppi)
+                ruudut_joissa_pari = []
+                for y, x in ruudut:
+                    if kaksi_numeroa[0] in mahdolliset[y][x] and kaksi_numeroa[1] in mahdolliset[y][x]:
+                        ekan_mahdolliset = etsi_mahdollisista_ruuduissa(kaksi_numeroa[0], talon_ruudut(talon_nro, tyyppi), mahdolliset)
+                        tokan_mahdolliset = etsi_mahdollisista_ruuduissa(kaksi_numeroa[1], talon_ruudut(talon_nro, tyyppi), mahdolliset)
+                        if len(ekan_mahdolliset) != 2 or len(tokan_mahdolliset) != 2:
+                            continue
+                        elif ekan_mahdolliset != tokan_mahdolliset:
+                            continue
+                        else:
+                            ruudut_joissa_pari.append((y, x))
+                if len(ruudut_joissa_pari) == 2:
+                    for y, x in ruudut_joissa_pari:
+                        if len(mahdolliset[y][x]) > 2:
+                            loput_numerot = muut_numerot(kaksi_numeroa[0], kaksi_numeroa[1])
+                            for poistettava_numero in loput_numerot:
+                                if poistettava_numero in mahdolliset[y][x]:
+                                    mahdolliset[y][x].remove(poistettava_numero)
+                            print(f"poistettu joukosta {mahdolliset[y][x]} ruudussa {y}, {x} muut kuin {kaksi_numeroa} piiloutuneen parin takia, tyyppi {tyyppi}.")
                             eteni += 1
-                        if nro_2 in mahdolliset[y][x]:
-                            mahdolliset[y][x].remove(nro_2)
-                            # print(f"poistettiin ruudusta {y},{x} mahdollinen {nro_2}, poistoperuste {tyyppi}")
-                            eteni +=1
+    return eteni
+
+def piiloutunut_tripla(sudoku: list, mahdolliset: list) -> int: # kesken
+    eteni = 0
+    for tyyppi in ("r", "s", "b"):
+        for talon_nro in range(9):
+            for kolme_numeroa in itertools.combinations(range(1, 10), 3):
+                loput_numerot = muut_numerot(kolme_numeroa[0], kolme_numeroa[1], kolme_numeroa[2])
+                ruudut_joissa_triplaa = []
+                for numero in kolme_numeroa:
+                    for ruutu in etsi_mahdollisista_ruuduissa(numero, talon_ruudut(talon_nro, tyyppi), mahdolliset):
+                        if ruutu not in ruudut_joissa_triplaa:
+                            ruudut_joissa_triplaa.append(ruutu)
+                            continue
+                        else:
+                            print(f"Numeroa {numero} ei löytynyt yhdestäkään ruudusta talossa")
+                if len(ruudut_joissa_triplaa) != 3:
+                    continue
+                loput_numerot = muut_numerot(kolme_numeroa[0], kolme_numeroa[1], kolme_numeroa[2])
+                for y, x in ruudut_joissa_triplaa:
+                    for poistettava in loput_numerot:
+                        if poistettava in mahdolliset[y][x]:
+                            mahdolliset[y][x].remove(poistettava)
+                            print(f"Poistettu piiloutuneella triplalla ylimääräistä ruudusta {y} ,{x}, tyypillä {tyyppi}.")
+                            eteni += 1
     return eteni
 
 def alaston_tripla(sudoku: list, mahdolliset: list) -> int:
@@ -444,21 +479,27 @@ def alaston_tripla(sudoku: list, mahdolliset: list) -> int:
     for tyyppi in ["r", "s", "b"]:
         for talo in range(0, 9):
             for kolme_numeroa in itertools.combinations(range(1, 10), 3):
-                kielletyt_numerot = [i for i in range(1, 10)]
+                ruudut_joissa_triplaa = []
                 for numero in kolme_numeroa:
-                    kielletyt_numerot.remove(numero)
-                ruudut = talon_ruudut(talo, tyyppi)
-                ruudut_joissa_tripla = ruudut[:]
+                    numeron_ruudut = etsi_mahdollisista_ruuduissa(numero, talon_ruudut(talo, tyyppi))
+                    for ruutu in numeron_ruudut:
+                        if ruutu not in ruudut_joissa_triplaa:
+                            ruudut_joissa_triplaa.append(ruutu)
+                kielletyt_numerot = []
+                for nro_1, nro_2, nro_3 in kolme_numeroa:
+                    kielletyt_numerot = muut_numerot(nro_1, nro_2, nro_3)
+
+                
                 for y, x in ruudut:
                     for kielletty in kielletyt_numerot:
-                        if (y, x) not in ruudut_joissa_tripla:
+                        if (y, x) not in ruudut_joissa_triplaa:
                             break
                         if kielletty in mahdolliset[y][x] or len(mahdolliset[y][x]) == 0:
-                            ruudut_joissa_tripla.remove((y, x))
-                if len(ruudut_joissa_tripla) == 3:
-                    # print(f"{tyyppi} {talo}: ruudut {ruudut_joissa_tripla} pitävät kaikki sisällään vain numeroita {numero for numero in kolme_numeroa}.")
+                            ruudut_joissa_triplaa.remove((y, x))
+                if len(ruudut_joissa_triplaa) == 3:
+                    # print(f"{tyyppi} {talo}: ruudut {ruudut_joissa_triplaa} pitävät kaikki sisällään vain numeroita {numero for numero in kolme_numeroa}.")
                     kasiteltavat_talon_ruudut = talon_ruudut(talo, tyyppi)
-                    for ruutu in ruudut_joissa_tripla:
+                    for ruutu in ruudut_joissa_triplaa:
                         kasiteltavat_talon_ruudut.remove(ruutu)
                     for y, x in kasiteltavat_talon_ruudut:
                         for poistettava_numero in kolme_numeroa:
@@ -688,11 +729,14 @@ def miekkakala(sudoku: list, mahdolliset: list) -> int:
 
 
 if __name__ == "__main__":
-    sudoku = ota_sudoku()
-    nimi = input("Anna sudokullesi nimi: ")
-    with open("sudokut.txt", "a") as kokoelma:
-        kokoelma.write(f"\n{nimi} = {sudoku}\n")
-    time.sleep(2)
+    # sudoku = ota_sudoku()
+    # nimi = input("Anna sudokullesi nimi: ")
+    # with open("sudokut.txt", "a") as kokoelma:
+    #     kokoelma.write(f"\n{nimi} = {sudoku}\n")
+    # time.sleep(2)
+
+    # piilotettu_pari
+    sudoku = [[0, 0, 0, 0, 6, 0, 0, 0, 0], [0, 0, 0, 0, 4, 2, 7, 3, 6], [0, 0, 6, 7, 3, 0, 0, 4, 0], [0, 9, 4, 0, 0, 0, 0, 6, 8], [0, 0, 0, 0, 9, 6, 4, 0, 7], [6, 0, 7, 0, 5, 0, 9, 2, 3], [1, 0, 0, 0, 0, 0, 0, 8, 5], [0, 6, 0, 0, 8, 0, 2, 7, 1], [0, 0, 5, 0, 1, 0, 0, 9, 4]]
     tulosta_sudoku(sudoku)
     ratkaise_sudoku(sudoku)
 

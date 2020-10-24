@@ -22,6 +22,7 @@ def ratkaise_sudoku(sisaan_sudoku: list) -> list:
             edistysta += alaston_tripla(sudoku, mahdolliset)
             edistysta += piiloutunut_pari(sudoku, mahdolliset)
             edistysta += piiloutunut_tripla(sudoku, mahdolliset)
+            edistysta += piiloutunut_nelikko(sudoku, mahdolliset)
             edistysta += lukitut_kandidaatit_1(sudoku, mahdolliset)
             edistysta += lukitut_kandidaatit_2(sudoku, mahdolliset)
             edistysta += alaston_tripla(sudoku, mahdolliset)
@@ -477,21 +478,51 @@ def piiloutunut_tripla(sudoku: list, mahdolliset: list) -> int:
                             eteni += 1
     return eteni
 
+def piiloutunut_nelikko(sudoku: list, mahdolliset: list) -> int: # testaamatta mutta toiminee
+    eteni = 0
+    for tyyppi in ("r", "s", "b"):
+        for talon_nro in range(9):
+            for nelja_numeroa in itertools.combinations(range(1, 10), 4):
+                ruudut_joissa_nelikkoa = []
+                numeroita_nelikosta_mahdollisissa = 0
+
+                for numero in nelja_numeroa:
+                    if len(etsi_mahdollisista_ruuduissa(numero, talon_ruudut(talon_nro, tyyppi), mahdolliset)) == 0:
+                        # print(f"Nelikon numeroa {numero} ei ollut yhdenkään ruudun mahdollisissa joukossa {tyyppi} {talon_nro}")
+                        break
+                    else:
+                        numeroita_nelikosta_mahdollisissa += 1
+                    for ruutu in etsi_mahdollisista_ruuduissa(numero, talon_ruudut(talon_nro, tyyppi), mahdolliset):
+                        if ruutu not in ruudut_joissa_nelikkoa:
+                            ruudut_joissa_nelikkoa.append(ruutu)
+                if numeroita_nelikosta_mahdollisissa != 4 or len(ruudut_joissa_nelikkoa) != 4:
+                    continue
+                loput_numerot = muut_numerot(nelja_numeroa[0], nelja_numeroa[1], nelja_numeroa[2], nelja_numeroa[3])
+                for y, x in ruudut_joissa_nelikkoa:
+                    for poistettava in loput_numerot:
+                        if poistettava in mahdolliset[y][x]:
+                            mahdolliset[y][x].remove(poistettava)
+                            print(f"Poistettu piiloutuneella nelikolla {poistettava} ruudusta {y}, {x} , tyypillä {tyyppi}.")
+                            print(f"Nelikko oli {nelja_numeroa}")
+                            time.sleep(1)
+                            eteni += 1
+    return eteni
+
 def alaston_tripla(sudoku: list, mahdolliset: list) -> int:
     eteni = 0
     for tyyppi in ["r", "s", "b"]:
         for talo in range(0, 9):
             for kolme_numeroa in itertools.combinations(range(1, 10), 3):
                 ruudut_joissa_triplaa = []
+                
                 for numero in kolme_numeroa:
                     numeron_ruudut = etsi_mahdollisista_ruuduissa(numero, talon_ruudut(talo, tyyppi), mahdolliset)
                     for ruutu in numeron_ruudut:
                         if ruutu not in ruudut_joissa_triplaa:
                             ruudut_joissa_triplaa.append(ruutu)
-                kielletyt_numerot = []
-                for nro_1, nro_2, nro_3 in kolme_numeroa:
-                    kielletyt_numerot = muut_numerot(nro_1, nro_2, nro_3)
-
+                kielletyt_numerot = [i for i in range(1, 10)]
+                for numero in kolme_numeroa:
+                    kielletyt_numerot.remove(numero)
                 
                 for y, x in talon_ruudut(talo, tyyppi):
                     for kielletty in kielletyt_numerot:
@@ -737,12 +768,11 @@ if __name__ == "__main__":
     with open("sudokut.txt", "a") as kokoelma:
         kokoelma.write(f"\n{nimi} = {sudoku}\n")
     time.sleep(2)
-
     tulosta_sudoku(sudoku)
     ratkaise_sudoku(sudoku)
 
-    with open("sudokut.txt", "a") as kokoelma:
-        kokoelma.write("Ratkesi\n")
+    # with open("sudokut.txt", "a") as kokoelma:
+    #     kokoelma.write("Ratkesi\n")
     
     
     # sudoku_tyhja = [

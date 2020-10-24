@@ -11,23 +11,23 @@ def ratkaise_sudoku(sisaan_sudoku: list) -> list:
                 
     while True:
         edistysta = 0
-        # edistysta += tarkasta_vaajaamattomat(sudoku, mahdolliset)
-        # edistysta += syvatarkasta_blokeista(sudoku, mahdolliset)
-        # edistysta += syvatarkasta_rivilta(sudoku, mahdolliset)
-        # edistysta += syvatarkasta_sarakkeesta(sudoku, mahdolliset)
+        edistysta += tarkasta_vaajaamattomat(sudoku, mahdolliset)
+        edistysta += syvatarkasta_blokeista(sudoku, mahdolliset)
+        edistysta += syvatarkasta_rivilta(sudoku, mahdolliset)
+        edistysta += syvatarkasta_sarakkeesta(sudoku, mahdolliset)
         
         
         if edistysta == 0:
-            # edistysta += alaston_pari(sudoku, mahdolliset)
-            # edistysta += alaston_tripla(sudoku, mahdolliset)
-            # edistysta += piiloutunut_pari(sudoku, mahdolliset)
+            edistysta += alaston_pari(sudoku, mahdolliset)
+            edistysta += alaston_tripla(sudoku, mahdolliset)
+            edistysta += piiloutunut_pari(sudoku, mahdolliset)
             edistysta += piiloutunut_tripla(sudoku, mahdolliset)
-            # edistysta += lukitut_kandidaatit_1(sudoku, mahdolliset)
-            # edistysta += lukitut_kandidaatit_2(sudoku, mahdolliset)
-            # edistysta += alaston_tripla(sudoku, mahdolliset)
-            # edistysta += alaston_nelikko(sudoku, mahdolliset)
-            # edistysta += x_wing(sudoku, mahdolliset)
-            # edistysta += miekkakala(sudoku, mahdolliset)
+            edistysta += lukitut_kandidaatit_1(sudoku, mahdolliset)
+            edistysta += lukitut_kandidaatit_2(sudoku, mahdolliset)
+            edistysta += alaston_tripla(sudoku, mahdolliset)
+            edistysta += alaston_nelikko(sudoku, mahdolliset)
+            edistysta += x_wing(sudoku, mahdolliset)
+            edistysta += miekkakala(sudoku, mahdolliset)
             
         if edistysta == 0:
             print("Taitaa olla jumissa")
@@ -449,7 +449,7 @@ def piiloutunut_pari(sudoku: list, mahdolliset: list) -> int:
                             eteni += 1
     return eteni
 
-def piiloutunut_tripla(sudoku: list, mahdolliset: list) -> int: # kesken
+def piiloutunut_tripla(sudoku: list, mahdolliset: list) -> int:
     eteni = 0
     for tyyppi in ("r", "s", "b"):
         for talon_nro in range(9):
@@ -472,9 +472,8 @@ def piiloutunut_tripla(sudoku: list, mahdolliset: list) -> int: # kesken
                     for poistettava in loput_numerot:
                         if poistettava in mahdolliset[y][x]:
                             mahdolliset[y][x].remove(poistettava)
-                            print(f"Poistettu piiloutuneella triplalla {poistettava} ruudusta {y}, {x} , tyypillä {tyyppi}.")
-                            print(f"Tripla oli {kolme_numeroa}")
-                            time.sleep(1)
+                            # print(f"Poistettu piiloutuneella triplalla {poistettava} ruudusta {y}, {x} , tyypillä {tyyppi}.")
+                            # print(f"Tripla oli {kolme_numeroa}")
                             eteni += 1
     return eteni
 

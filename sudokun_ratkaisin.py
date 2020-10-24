@@ -20,13 +20,12 @@ def ratkaise_sudoku(sisaan_sudoku: list) -> list:
         if edistysta == 0:
             edistysta += alaston_pari(sudoku, mahdolliset)
             edistysta += alaston_tripla(sudoku, mahdolliset)
+            edistysta += alaston_nelikko(sudoku, mahdolliset)
             edistysta += piiloutunut_pari(sudoku, mahdolliset)
             edistysta += piiloutunut_tripla(sudoku, mahdolliset)
             edistysta += piiloutunut_nelikko(sudoku, mahdolliset)
             edistysta += lukitut_kandidaatit_1(sudoku, mahdolliset)
             edistysta += lukitut_kandidaatit_2(sudoku, mahdolliset)
-            edistysta += alaston_tripla(sudoku, mahdolliset)
-            edistysta += alaston_nelikko(sudoku, mahdolliset)
             edistysta += x_wing(sudoku, mahdolliset)
             edistysta += miekkakala(sudoku, mahdolliset)
             
@@ -446,7 +445,7 @@ def piiloutunut_pari(sudoku: list, mahdolliset: list) -> int:
                             for poistettava_numero in loput_numerot:
                                 if poistettava_numero in mahdolliset[y][x]:
                                     mahdolliset[y][x].remove(poistettava_numero)
-                            print(f"poistettu joukosta {mahdolliset[y][x]} ruudussa {y}, {x} muut kuin {kaksi_numeroa} piiloutuneen parin takia, tyyppi {tyyppi}.")
+                            # print(f"poistettu joukosta {mahdolliset[y][x]} ruudussa {y}, {x} muut kuin {kaksi_numeroa} piiloutuneen parin takia, tyyppi {tyyppi}.")
                             eteni += 1
     return eteni
 
@@ -771,8 +770,8 @@ if __name__ == "__main__":
     tulosta_sudoku(sudoku)
     ratkaise_sudoku(sudoku)
 
-    # with open("sudokut.txt", "a") as kokoelma:
-    #     kokoelma.write("Ratkesi\n")
+    with open("sudokut.txt", "a") as kokoelma:
+        kokoelma.write("Ratkesi\n")
     
     
     # sudoku_tyhja = [

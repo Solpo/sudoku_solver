@@ -198,27 +198,7 @@ def alusta_mahdolliset() -> list:
 # apufunktiot
 
 def ruudun_blokki(rivi: int, sarake: int) -> int:
-    if rivi <= 2:
-        if sarake <= 2:
-            return 0
-        elif sarake <= 5:
-            return 1
-        elif sarake <= 8:
-            return 2
-    elif rivi <= 5:
-        if sarake <= 2:
-            return 3
-        elif sarake <= 5:
-            return 4
-        elif sarake <= 8:
-            return 5
-    elif rivi <= 8:
-        if sarake <= 2:
-            return 6
-        elif sarake <= 5:
-            return 7
-        elif sarake <= 8:
-            return 8
+    return rivi // 3 * 3 + sarake // 3 * 1
         
 def talon_ruudut(talon_nro: int, tyyppi: str) -> list:
     tyyppi = tyyppi.lower()

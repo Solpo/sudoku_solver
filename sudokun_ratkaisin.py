@@ -1,4 +1,3 @@
-# seuraavaksi hidden pair
 import time, itertools
 
 def ratkaise_sudoku(sisaan_sudoku: list) -> list:
@@ -153,7 +152,7 @@ def ota_rivi(rivinro: int) -> list:
             return rivi
         except (KeyError, ValueError, IndexError):
             print()
-            print("Virheellinen rivi")
+            print("*** Virheellinen rivi, yritä uudestaan ***")
             print()
             continue
 
@@ -397,7 +396,6 @@ def syvatarkasta_sarakkeesta(sudoku:list, mahdolliset: list) -> int:
                         eteni += 1
     return eteni
 
-# allaolevan voinee laajentaa koskemaan lukittuja pareja
 def alaston_pari(sudoku: list, mahdolliset: list) -> int:
     eteni = 0
     for tyyppi in ("r", "s", "b"):
@@ -772,17 +770,3 @@ if __name__ == "__main__":
     with open("sudokut.txt", "a") as kokoelma:
         kokoelma.write("Ratkesi\n")
     
-    
-    # sudoku_tyhja = [
-    #         [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    #         [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    #         [0, 0, 0, 0, 0, 0, 0, 0, 0],
-
-    #         [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    #         [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    #         [0, 0, 0, 0, 0, 0, 0, 0, 0],
-
-    #         [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    #         [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    #         [0, 0, 0, 0, 0, 0, 0, 0, 0]
-    #     ]

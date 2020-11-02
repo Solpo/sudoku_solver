@@ -30,16 +30,21 @@ def ratkaise_sudoku(sisaan_sudoku: list) -> list:
             
         if edistysta == 0:
             print("Taitaa olla jumissa")
-            time.sleep(2.5)
-        edistysta = 0
+            raaka = input("Mennäänkö raa'alla voimalla? [k/E]?: ")
+            if raaka.lower() == "k":
+                sudoku = brute_force(sudoku, mahdolliset)
         
+        edistysta = 0
+
         if onko_ratkaistu(sudoku):
             print("\n\n\n\n\n\nSudoku ratkaistu!\n")
             tulosta_sudoku(sudoku)
-            if onko_kelvollinen_sudoku(sudoku):
-                print("oikeinkin vielä")
-            else:
-                print("nyt vaan meni jotenkin väärin")
+            print("oikeinkin vielä" if onko_kelvollinen_sudoku(sudoku) else "nyt vaan meni jotenkin väärin")
+            # ylläolevan pitäisi korvata nämä rivit
+            # if onko_kelvollinen_sudoku(sudoku):
+            #     print("oikeinkin vielä")
+            # else:
+            #     print("nyt vaan meni jotenkin väärin")
             time.sleep(5)
             return sudoku
 
@@ -50,7 +55,7 @@ def onko_ratkaistu(sudoku: list) -> bool:
                 if sudoku[y][x] == 0:
                     return False
     if not nollia_jaljella:
-        print("Sudoku ratkaistu:")
+        # print("Sudoku ratkaistu:")
         return True
 
 def tulosta_sudoku(sudoku: list):
@@ -79,6 +84,18 @@ def lisaa_sudokuun(sudoku: list, rivi: int, sarake: int, nro: int, mahdolliset: 
     if not nopeasti:
         # time.sleep(0.45)
         pass
+
+def kelpaako_ruutuun(rivi: int, sarake: int, nro: int, sudoku: list) -> bool:
+    for y, x in talon_ruudut(rivi, "r"):
+        if nro == sudoku[y][x]:
+            return False
+    for y, x in talon_ruudut(sarake, "s"):
+        if nro == sudoku[y][x]:
+            return False
+    for y, x in talon_ruudut(ruudun_blokki(rivi, sarake), "b"):
+        if nro == sudoku[y][x]:
+            return False
+    return True
 
 def ota_sudoku():
     palautettava = []
@@ -735,18 +752,40 @@ def miekkakala(sudoku: list, mahdolliset: list) -> int:
                                         eteni += 1
     return eteni
 
+def brute_force(sudoku:list, mahdolliset: list) -> list:
+    ratkaisemattomat_ruudut = []
+    for y in range(9):
+        for x in range(9):
+            if sudoku[y][x] == 0:
+                ratkaisemattomat_ruudut.append((y, x))
+    if len(ratkaisemattomat_ruudut) == 0:
+        return sudoku
+    for y, x in ratkaisemattomat_ruudut:
+        for nro in mahdolliset[y][x]:
+            if kelpaako_ruutuun(y, x, nro, sudoku):
+                sudoku[y][x] = nro
+                # if onko_ratkaistu(sudoku):
+                #     return sudoku
+                # else:
+                sudoku = brute_force(sudoku, mahdolliset)
+            if onko_ratkaistu(sudoku):
+                return sudoku
+            sudoku[y][x] = 0
+        return sudoku
+        
 
 
 
 if __name__ == "__main__":
-    sudoku = ota_sudoku()
-    nimi = input("Anna sudokullesi nimi: ")
-    with open("sudokut.txt", "a") as kokoelma:
-        kokoelma.write(f"\n{nimi} = {sudoku}\n")
-    time.sleep(2)
+    # sudoku = ota_sudoku()
+    # nimi = input("Anna sudokullesi nimi: ")
+    # with open("sudokut.txt", "a") as kokoelma:
+    #     kokoelma.write(f"\n{nimi} = {sudoku}\n")
+    sudoku = [[8, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 3, 6, 0, 0, 0, 0, 0], [0, 7, 0, 0, 9, 0, 2, 0, 0], [0, 5, 0, 0, 0, 7, 0, 0, 0], [0, 0, 0, 0, 4, 5, 7, 0, 0], [0, 0, 0, 1, 0, 0, 0, 3, 0], [0, 0, 1, 0, 0, 0, 0, 6, 8], [0, 0, 8, 5, 0, 0, 0, 1, 0], [0, 9, 0, 0, 0, 0, 4, 0, 0]]
     tulosta_sudoku(sudoku)
+    time.sleep(2)
     ratkaise_sudoku(sudoku)
 
-    with open("sudokut.txt", "a") as kokoelma:
-        kokoelma.write("Ratkesi\n")
+    # with open("sudokut.txt", "a") as kokoelma:
+    #     kokoelma.write("Ratkesi\n")
     

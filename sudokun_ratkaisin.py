@@ -32,12 +32,19 @@ def ratkaise_sudoku(sisaan_sudoku: list) -> list:
             print("Taitaa olla jumissa")
             raaka = input("Mennäänkö raa'alla voimalla? [k/E]?: ")
             if raaka.lower() == "k":
-                sudoku = brute_force(sudoku, mahdolliset)
+                puhelias_vastaus = input("Näytetäänkö välivaiheet? [k/E]: ")
+                puhelias = True if puhelias_vastaus.lower() == "k" else False
+                lahtoaika = time.time()
+                sudoku = brute_force(sudoku, mahdolliset, puhelias)
+                loppuaika = time.time()
+                kesto = loppuaika - lahtoaika
+                
         
         edistysta = 0
 
         if onko_ratkaistu(sudoku):
             print("\n\n\n\n\n\nSudoku ratkaistu!\n")
+            print(f"Aikaa kului {kesto:.3f} sekuntia")
             tulosta_sudoku(sudoku)
             print("oikeinkin vielä" if onko_kelvollinen_sudoku(sudoku) else "nyt vaan meni jotenkin väärin")
             # ylläolevan pitäisi korvata nämä rivit
@@ -753,7 +760,7 @@ def miekkakala(sudoku: list, mahdolliset: list) -> int:
                                         eteni += 1
     return eteni
 
-def brute_force(sudoku:list, mahdolliset: list) -> list:
+def brute_force(sudoku:list, mahdolliset: list, puhelias: bool = False) -> list:
     ratkaisemattomat_ruudut = []
     for y in range(9):
         for x in range(9):
@@ -765,7 +772,9 @@ def brute_force(sudoku:list, mahdolliset: list) -> list:
         for nro in mahdolliset[y][x]:
             if kelpaako_ruutuun(y, x, nro, sudoku):
                 sudoku[y][x] = nro
-                sudoku = brute_force(sudoku, mahdolliset)
+                if puhelias:
+                    tulosta_sudoku(sudoku)
+                sudoku = brute_force(sudoku, mahdolliset, puhelias)
             if onko_ratkaistu(sudoku):
                 return sudoku
             sudoku[y][x] = 0

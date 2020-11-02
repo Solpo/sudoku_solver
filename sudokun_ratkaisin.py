@@ -1,6 +1,8 @@
 import time, itertools
 
 def ratkaise_sudoku(sisaan_sudoku: list) -> list:
+    global yrityksia
+    yrityksia = 0
     mahdolliset = alusta_mahdolliset()
     sudoku = alusta_sudoku()
     for y in range(9):
@@ -32,10 +34,18 @@ def ratkaise_sudoku(sisaan_sudoku: list) -> list:
             print("Taitaa olla jumissa")
             raaka = input("Mennäänkö raa'alla voimalla? [k/E]?: ")
             if raaka.lower() == "k":
+                viive = 0
                 puhelias_vastaus = input("Näytetäänkö välivaiheet? [k/E]: ")
                 puhelias = True if puhelias_vastaus.lower() == "k" else False
+                if puhelias:
+                    viive = input("Kuinka pitkä viive millisekunteina tulostusten välillä, max 250? ")
+                    try:
+                        viive = int(viive)
+                        viive = 250 if viive > 250 else viive
+                    except (TypeError, ValueError) as _:
+                        pass
                 lahtoaika = time.time()
-                sudoku = brute_force(sudoku, mahdolliset, puhelias)
+                sudoku = brute_force(sudoku, mahdolliset, puhelias, viive)
                 loppuaika = time.time()
                 kesto = loppuaika - lahtoaika
                 
@@ -45,6 +55,8 @@ def ratkaise_sudoku(sisaan_sudoku: list) -> list:
         if onko_ratkaistu(sudoku):
             print("\n\n\n\n\n\nSudoku ratkaistu!\n")
             print(f"Aikaa kului {kesto:.3f} sekuntia")
+            if yrityksia != 0:
+                print(f"Raa'alla voimalla sijoitettiin {yrityksia} numeroa tauluun")
             tulosta_sudoku(sudoku)
             print("oikeinkin vielä" if onko_kelvollinen_sudoku(sudoku) else "nyt vaan meni jotenkin väärin")
             # ylläolevan pitäisi korvata nämä rivit
@@ -760,7 +772,8 @@ def miekkakala(sudoku: list, mahdolliset: list) -> int:
                                         eteni += 1
     return eteni
 
-def brute_force(sudoku:list, mahdolliset: list, puhelias: bool = False) -> list:
+def brute_force(sudoku:list, mahdolliset: list, puhelias: bool = False, viive: int = 0) -> list:
+    global yrityksia
     ratkaisemattomat_ruudut = []
     for y in range(9):
         for x in range(9):
@@ -772,9 +785,13 @@ def brute_force(sudoku:list, mahdolliset: list, puhelias: bool = False) -> list:
         for nro in mahdolliset[y][x]:
             if kelpaako_ruutuun(y, x, nro, sudoku):
                 sudoku[y][x] = nro
+                yrityksia += 1
                 if puhelias:
+                    print(chr(27) + "[2J")
                     tulosta_sudoku(sudoku)
-                sudoku = brute_force(sudoku, mahdolliset, puhelias)
+                    if viive != 0:
+                        time.sleep(viive / 1000)
+                sudoku = brute_force(sudoku, mahdolliset, puhelias, viive)
             if onko_ratkaistu(sudoku):
                 return sudoku
             sudoku[y][x] = 0

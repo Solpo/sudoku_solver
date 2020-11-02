@@ -777,15 +777,14 @@ def brute_force(sudoku:list, mahdolliset: list) -> list:
 
 
 if __name__ == "__main__":
-    # sudoku = ota_sudoku()
-    # nimi = input("Anna sudokullesi nimi: ")
-    # with open("sudokut.txt", "a") as kokoelma:
-    #     kokoelma.write(f"\n{nimi} = {sudoku}\n")
-    sudoku = [[8, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 3, 6, 0, 0, 0, 0, 0], [0, 7, 0, 0, 9, 0, 2, 0, 0], [0, 5, 0, 0, 0, 7, 0, 0, 0], [0, 0, 0, 0, 4, 5, 7, 0, 0], [0, 0, 0, 1, 0, 0, 0, 3, 0], [0, 0, 1, 0, 0, 0, 0, 6, 8], [0, 0, 8, 5, 0, 0, 0, 1, 0], [0, 9, 0, 0, 0, 0, 4, 0, 0]]
+    sudoku = ota_sudoku()
+    nimi = input("Anna sudokullesi nimi: ")
+    with open("sudokut.txt", "a") as kokoelma:
+        kokoelma.write(f"\n{nimi} = {sudoku}\n")
     tulosta_sudoku(sudoku)
     time.sleep(2)
     ratkaise_sudoku(sudoku)
 
-    # with open("sudokut.txt", "a") as kokoelma:
-    #     kokoelma.write("Ratkesi\n")
+    with open("sudokut.txt", "a") as kokoelma:
+        kokoelma.write("Ratkesi\n")
     

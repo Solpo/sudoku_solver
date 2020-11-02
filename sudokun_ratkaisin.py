@@ -59,14 +59,16 @@ def onko_ratkaistu(sudoku: list) -> bool:
         return True
 
 def tulosta_sudoku(sudoku: list):
+    tulostettava = ""
     for i in range(9):
         for j in range(0, len(sudoku[i]), 3):
-            print(viivan_tulostus(sudoku[i][j]), end=" ")
-            print(viivan_tulostus(sudoku[i][j + 1]), end=" ")
-            print(viivan_tulostus(sudoku[i][j + 2]), end="  ")
-        print()
+            tulostettava += f"{viivan_tulostus(sudoku[i][j])} "
+            tulostettava += f"{viivan_tulostus(sudoku[i][j + 1])} "
+            tulostettava += f"{viivan_tulostus(sudoku[i][j + 2])}  "
+        tulostettava += "\n"
         if (i) % 3 == 2:
-            print()
+            tulostettava += "\n"
+    print(tulostettava)
 			
 def viivan_tulostus(i: int):
     if i == 0:
@@ -105,9 +107,8 @@ def ota_sudoku():
             palautettava.append(ota_rivi(rivinro))
             rivinro = len(palautettava)
         print("Sudokusi alla. Jos olet tyytyväinen, paina Enter, muuten anna korjattavan rivin numero (1 - 9)")
-        print("Käskyllä i# sijoitetaan riville # uusi rivi ja siirretään muita 1 alaspäin")
+        print("Käskyllä i# sijoitetaan riville # uusi rivi ja siirretään muita 1 alaspäin\n")
         tulosta_sudoku(palautettava)
-        print()
         try:
             komento = input("Korjattavan rivin numero tai tyhjä = OK: ")
             if komento == "":
@@ -764,9 +765,6 @@ def brute_force(sudoku:list, mahdolliset: list) -> list:
         for nro in mahdolliset[y][x]:
             if kelpaako_ruutuun(y, x, nro, sudoku):
                 sudoku[y][x] = nro
-                # if onko_ratkaistu(sudoku):
-                #     return sudoku
-                # else:
                 sudoku = brute_force(sudoku, mahdolliset)
             if onko_ratkaistu(sudoku):
                 return sudoku
@@ -781,7 +779,6 @@ if __name__ == "__main__":
     nimi = input("Anna sudokullesi nimi: ")
     with open("sudokut.txt", "a") as kokoelma:
         kokoelma.write(f"\n{nimi} = {sudoku}\n")
-    tulosta_sudoku(sudoku)
     time.sleep(2)
     ratkaise_sudoku(sudoku)
 
